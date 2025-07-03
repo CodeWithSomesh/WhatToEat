@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: ^2.2.2
   audioplayers: ^5.2.1
   google_fonts: ^6.1.0
+  confetti: ^0.7.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -97,3 +98,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  assets:
+    - assets/sounds/spin.mp3

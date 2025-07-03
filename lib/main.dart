@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'providers/options_provider.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: HomeScreen(),
-    debugShowCheckedModeBanner: false,
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => OptionsProvider()),
+      ],
+      child: const MaterialApp(
+        home: HomeScreen(), // or your main navigation widget
+        debugShowCheckedModeBanner: false,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
