@@ -20,15 +20,6 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-<<<<<<< Updated upstream
-                const SizedBox(height: 32),
-                Text(
-                  'What To Eat?!',
-                  style: GoogleFonts.luckiestGuy(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
-=======
                 Column(
                   children: [
                     const SizedBox(height: 32),
@@ -84,30 +75,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ],
->>>>>>> Stashed changes
                 ),
                 Padding(
-<<<<<<< Updated upstream
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: _FeatureCard(
-                          color: const Color(0xFFFF5FCF),
-                          shadowColor: Colors.pink.shade700,
-                          icon: Icons.shuffle,
-                          title: 'MANUAL WHEEL',
-                          description:
-                              'Add your own food options and spin the wheel to decide!',
-                          buttonText: 'START SPINNING →',
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const ManualSpinScreen()),
-                            );
-                          },
-=======
                   padding: const EdgeInsets.only(bottom: 32.0, left: 16.0, right: 16.0, top: 16.0),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
@@ -119,7 +88,6 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.green.shade700.withOpacity(0.3),
                           offset: const Offset(3, 3),
                           blurRadius: 4,
->>>>>>> Stashed changes
                         ),
                       ],
                     ),
