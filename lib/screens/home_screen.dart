@@ -9,11 +9,17 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFF4D), // Bright yellow
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+<<<<<<< Updated upstream
                 const SizedBox(height: 32),
                 Text(
                   'WhatToEat?!',
@@ -21,17 +27,66 @@ class HomeScreen extends StatelessWidget {
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
+=======
+                Column(
+                  children: [
+                    const SizedBox(height: 32),
+                    Text(
+                      'What To Eat?!',
+                      style: GoogleFonts.luckiestGuy(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Stop overthinking, start eating! 🍕',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          _FeatureCard(
+                            color: const Color(0xFFFF5FCF),
+                            shadowColor: Colors.pink.shade700,
+                            icon: Icons.shuffle,
+                            title: 'MANUAL WHEEL',
+                            description:
+                            'Add your own food options and spin the wheel to decide!',
+                            buttonText: 'START SPINNING →',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const ManualSpinScreen()),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _FeatureCard(
+                            color: const Color(0xFF3DDCFF),
+                            shadowColor: Colors.blue.shade700,
+                            icon: Icons.favorite_border,
+                            title: 'RESTAURANT FINDER',
+                            description:
+                            'Swipe through restaurants and let us pick from your favorites!',
+                            buttonText: 'DISCOVER FOOD →',
+                            onPressed: () {
+                              // TODO: Navigate to restaurant finder screen
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+>>>>>>> Stashed changes
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Stop overthinking, start eating! 🍕',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 32),
                 Padding(
+<<<<<<< Updated upstream
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -48,63 +103,45 @@ class HomeScreen extends StatelessWidget {
                           onPressed: () {
                             // TODO: Navigate to manual spin screen
                           },
+=======
+                  padding: const EdgeInsets.only(bottom: 32.0, left: 16.0, right: 16.0, top: 16.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF39FF6A),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.shade700.withOpacity(0.3),
+                          offset: const Offset(3, 3),
+                          blurRadius: 4,
+>>>>>>> Stashed changes
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _FeatureCard(
-                          color: const Color(0xFF3DDCFF),
-                          shadowColor: Colors.blue.shade700,
-                          icon: Icons.favorite_border,
-                          title: 'RESTAURANT FINDER',
-                          description:
-                              'Swipe through restaurants and let us pick from your favorites!',
-                          buttonText: 'DISCOVER FOOD →',
-                          onPressed: () {
-                            // TODO: Navigate to restaurant finder screen
-                          },
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Text(
+                          '🍴',
+                          style: TextStyle(fontSize: 28),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'No more "I don\'t know, what do you want?" conversations!',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 32.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF39FF6A),
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.shade700.withOpacity(0.3),
-                      offset: const Offset(3, 3),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      '🍴',
-                      style: TextStyle(fontSize: 28),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'No more "I don\'t know, what do you want?" conversations!',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
