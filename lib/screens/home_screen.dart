@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'manual_spin_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 32),
                 Text(
-                  'WhatToEat?!',
+                  'What To Eat?!',
                   style: GoogleFonts.luckiestGuy(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
@@ -46,7 +47,10 @@ class HomeScreen extends StatelessWidget {
                               'Add your own food options and spin the wheel to decide!',
                           buttonText: 'START SPINNING →',
                           onPressed: () {
-                            // TODO: Navigate to manual spin screen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ManualSpinScreen()),
+                            );
                           },
                         ),
                       ),
