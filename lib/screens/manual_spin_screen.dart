@@ -151,7 +151,7 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                   ),
                   if (_lastResult != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 20.0, bottom: 8.0),
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
                       child: Center(
                         child: Transform.rotate(
                           angle: -0.05,
@@ -383,10 +383,9 @@ class _WheelPainter extends CustomPainter {
       // Draw option text
       if (options.isNotEmpty) {
         // Dynamically scale font size based on option length
-        double baseFontSize = 18;
-        double fontSize = baseFontSize;
+        double fontSize = 18;
         if (options[i].length > 14) {
-          fontSize = baseFontSize - (options[i].length - 14) * 0.7;
+          fontSize = 18 - (options[i].length - 14) * 0.7;
           if (fontSize < 10) fontSize = 10;
         }
         final textPainter = TextPainter(
