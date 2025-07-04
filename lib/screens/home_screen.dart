@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'manual_spin_screen.dart';
+import 'restaurant_finder_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -13,9 +14,9 @@ class HomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top -
-                  MediaQuery.of(context).padding.bottom,
+              minHeight: MediaQuery.of(context).size.height - 
+                         MediaQuery.of(context).padding.top - 
+                         MediaQuery.of(context).padding.bottom,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                             icon: Icons.shuffle,
                             title: 'MANUAL WHEEL',
                             description:
-                            'Add your own food options and spin the wheel to decide!',
+                                'Add your own food options and spin the wheel to decide!',
                             buttonText: 'START SPINNING →',
                             onPressed: () {
                               Navigator.push(
@@ -65,10 +66,13 @@ class HomeScreen extends StatelessWidget {
                             icon: Icons.favorite_border,
                             title: 'RESTAURANT FINDER',
                             description:
-                            'Swipe through restaurants and let us pick from your favorites!',
+                                'Swipe through restaurants and let us pick from your favorites!',
                             buttonText: 'DISCOVER FOOD →',
                             onPressed: () {
-                              // TODO: Navigate to restaurant finder screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const RestaurantFinderScreen()),
+                              );
                             },
                           ),
                         ],
