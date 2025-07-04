@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/options_provider.dart';
 import 'dart:math';
+import 'package:confetti/confetti.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class ManualSpinScreen extends StatefulWidget {
   const ManualSpinScreen({Key? key}) : super(key: key);
@@ -18,6 +20,9 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
   late Animation<double> _animation;
   int? _selectedIndex;
   bool _isSpinning = false;
+  String? _lastResult;
+  late ConfettiController _confettiController;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -29,16 +34,19 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
     _animation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
     );
+    _confettiController = ConfettiController(duration: const Duration(seconds: 2));
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _animationController.dispose();
+    _confettiController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
-  void _spinWheel(List<String> options) async {
+  Future<void> _spinWheel(List<String> options) async {
     if (options.isEmpty || _isSpinning) return;
     setState(() => _isSpinning = true);
     final random = Random();
@@ -49,30 +57,17 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
     _animation = Tween<double>(begin: 0, end: targetAngle).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
     );
+    // Play spinning sound
+    await _audioPlayer.play(AssetSource('sounds/spin.mp3'));
     await _animationController.forward(from: 0);
+    await _audioPlayer.stop();
     setState(() {
       _selectedIndex = selected;
+      _lastResult = options[selected];
       _isSpinning = false;
     });
-    await Future.delayed(const Duration(milliseconds: 400));
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Result'),
-        content: Text(
-          options[selected],
-          style: GoogleFonts.luckiestGuy(fontSize: 28),
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    // Show confetti
+    _confettiController.play();
   }
 
   @override
@@ -433,4 +428,4 @@ class _WheelPainter extends CustomPainter {
     return oldDelegate.options.length != options.length ||
         oldDelegate.angle != angle;
   }
-} 
+}
