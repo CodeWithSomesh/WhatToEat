@@ -290,7 +290,6 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                       ),
                     ),
                   ),
-                  // Add top margin before the button row
                   const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

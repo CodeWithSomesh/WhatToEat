@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:math';
 import 'auto_wheel_screen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class RestaurantFinderScreen extends StatefulWidget {
   const RestaurantFinderScreen({Key? key}) : super(key: key);
@@ -10,84 +15,181 @@ class RestaurantFinderScreen extends StatefulWidget {
   State<RestaurantFinderScreen> createState() => _RestaurantFinderScreenState();
 }
 
-class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> {
-  final List<Map<String, dynamic>> _restaurants = [
-    {
-      'name': 'Sushi World',
-      'image': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Japanese',
-      'rating': 4.7,
-      'address': '123 Tokyo Ave',
-    },
-    {
-      'name': 'Pizza Palace',
-      'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Italian',
-      'rating': 4.5,
-      'address': '456 Rome St',
-    },
-    {
-      'name': 'Burger Barn',
-      'image': 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'American',
-      'rating': 4.3,
-      'address': '789 New York Rd',
-    },
-    {
-      'name': 'Curry House',
-      'image': 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Indian',
-      'rating': 4.6,
-      'address': '321 Delhi Blvd',
-    },
-    {
-      'name': 'Noodle House',
-      'image': 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Chinese',
-      'rating': 4.4,
-      'address': '654 Beijing Rd',
-    },
-    {
-      'name': 'Taco Town',
-      'image': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Mexican',
-      'rating': 4.2,
-      'address': '987 Mexico St',
-    },
-    {
-      'name': 'Vegan Delight',
-      'image': 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Vegan',
-      'rating': 4.8,
-      'address': '111 Greenway',
-    },
-    {
-      'name': 'Steak House',
-      'image': 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Steak',
-      'rating': 4.7,
-      'address': '222 Grill Ave',
-    },
-    {
-      'name': 'Seafood Shack',
-      'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Seafood',
-      'rating': 4.5,
-      'address': '333 Ocean Dr',
-    },
-    {
-      'name': 'Pasta Point',
-      'image': 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80',
-      'cuisine': 'Italian',
-      'rating': 4.6,
-      'address': '444 Rome St',
-    },
-  ];
-
+class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> 
+    with TickerProviderStateMixin {
+  List<Map<String, dynamic>> _restaurants = [];
   int _currentIndex = 0;
   double _dragDx = 0;
   double _dragStartX = 0;
   final List<Map<String, dynamic>> _liked = [];
+  bool _isLoading = true;
+  String _error = '';
+  late AnimationController _cardAnimationController;
+  late AnimationController _buttonAnimationController;
+  late Animation<double> _cardAnimation;
+  late Animation<double> _buttonAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _cardAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _buttonAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _cardAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _cardAnimationController, curve: Curves.elasticOut),
+    );
+    _buttonAnimation = Tween<double>(begin: 1, end: 0.95).animate(
+      CurvedAnimation(parent: _buttonAnimationController, curve: Curves.easeInOut),
+    );
+    _fetchNearbyRestaurants();
+  }
+
+  @override
+  void dispose() {
+    _cardAnimationController.dispose();
+    _buttonAnimationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchNearbyRestaurants() async {
+    try {
+      if (!kIsWeb) {
+        // Request location permissions
+        final permission = await Permission.location.request();
+        if (permission != PermissionStatus.granted) {
+          setState(() {
+            _error = 'Location permission is required to find nearby restaurants';
+            _isLoading = false;
+          });
+          return;
+        }
+      } else {
+        // On web, permissions are handled by the browser
+      }
+
+      // Get current location
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+
+      // Use Google Places API (you'll need to add your API key)
+      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps'; // Replace with your actual API key
+      final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+          '?location=${position.latitude},${position.longitude}'
+          '&radius=5000'
+          '&type=restaurant'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List;
+        
+        setState(() {
+          _restaurants = results.take(15).map((restaurant) {
+            final photos = restaurant['photos'] as List?;
+            final photoReference = (photos != null && photos.isNotEmpty)
+                ? photos[0]['photo_reference']
+                : null;
+            
+            return {
+              'name': restaurant['name'] ?? 'Unknown Restaurant',
+              'image': photoReference != null 
+                  ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$apiKey'
+                  : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
+              'cuisine': _extractCuisineType(restaurant['types'] ?? []),
+              'rating': (restaurant['rating'] ?? 4.0).toDouble(),
+              'address': restaurant['vicinity'] ?? 'Address not available',
+              'priceLevel': restaurant['price_level'] ?? 2,
+              'placeId': restaurant['place_id'],
+            };
+          }).toList();
+          _isLoading = false;
+        });
+        
+        _cardAnimationController.forward();
+      } else {
+        throw Exception('Failed to load restaurants');
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load restaurants: $e';
+        _isLoading = false;
+        // Fallback to dummy data
+        _restaurants = _getDummyRestaurants();
+      });
+      _cardAnimationController.forward();
+    }
+  }
+
+  String _extractCuisineType(List types) {
+    const cuisineMap = {
+      'bakery': 'Bakery',
+      'bar': 'Bar',
+      'cafe': 'Cafe',
+      'meal_delivery': 'Delivery',
+      'meal_takeaway': 'Takeaway',
+      'restaurant': 'Restaurant',
+    };
+    
+    for (String type in types) {
+      if (cuisineMap.containsKey(type)) {
+        return cuisineMap[type]!;
+      }
+    }
+    return 'Restaurant';
+  }
+
+  List<Map<String, dynamic>> _getDummyRestaurants() {
+    return [
+      {
+        'name': 'Sushi Zen',
+        'image': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80',
+        'cuisine': 'Japanese',
+        'rating': 4.7,
+        'address': '123 Tokyo Ave',
+        'priceLevel': 3,
+      },
+      {
+        'name': 'Pizza Paradiso',
+        'image': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80',
+        'cuisine': 'Italian',
+        'rating': 4.5,
+        'address': '456 Rome St',
+        'priceLevel': 2,
+      },
+      {
+        'name': 'Burger Bliss',
+        'image': 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80',
+        'cuisine': 'American',
+        'rating': 4.3,
+        'address': '789 New York Rd',
+        'priceLevel': 2,
+      },
+      {
+        'name': 'Spice Garden',
+        'image': 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80',
+        'cuisine': 'Indian',
+        'rating': 4.6,
+        'address': '321 Delhi Blvd',
+        'priceLevel': 2,
+      },
+      {
+        'name': 'Dragon Wok',
+        'image': 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80',
+        'cuisine': 'Chinese',
+        'rating': 4.4,
+        'address': '654 Beijing Rd',
+        'priceLevel': 2,
+      },
+    ];
+  }
 
   void _onDragStart(DragStartDetails details) {
     _dragStartX = details.globalPosition.dx;
@@ -125,10 +227,14 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> {
   }
 
   void _nextCard() {
+    _cardAnimationController.reset();
     setState(() {
       _currentIndex++;
       _dragDx = 0;
     });
+    if (_currentIndex < _restaurants.length) {
+      _cardAnimationController.forward();
+    }
   }
 
   void _startOver() {
@@ -136,7 +242,9 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> {
       _currentIndex = 0;
       _liked.clear();
       _dragDx = 0;
+      _isLoading = true;
     });
+    _fetchNearbyRestaurants();
   }
 
   void _spinFromPicks() {
@@ -151,143 +259,342 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDone = _currentIndex >= 10;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Restaurant Finder', style: GoogleFonts.luckiestGuy(fontSize: 26)),
-        backgroundColor: const Color(0xFF3DDCFF),
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
       backgroundColor: const Color(0xFFFFFF4D),
-      body: isDone ? _buildEndScreen(context) : _buildSwipeScreen(context),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: AppBar(
+          backgroundColor: const Color(0xFFFFFF4D),
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFF3DDCFF),
+              border: Border(
+                bottom: BorderSide(color: Colors.black, width: 4),
+              ),
+            ),
+            child: SafeArea(
+              child: Center(
+                child: Text(
+                  'RESTAURANT FINDER',
+                  style: GoogleFonts.fredoka(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: _isLoading ? _buildLoadingScreen() : 
+            _error.isNotEmpty ? _buildErrorScreen() :
+            _currentIndex >= _restaurants.length ? _buildEndScreen() : _buildSwipeScreen(),
     );
   }
 
-  Widget _buildSwipeScreen(BuildContext context) {
+  Widget _buildLoadingScreen() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        margin: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black, width: 4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              offset: const Offset(8, 8),
+              blurRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              width: 60,
+              height: 60,
+              child: CircularProgressIndicator(
+                strokeWidth: 6,
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF5FCF)),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'FINDING NEARBY\nRESTAURANTS...',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.fredoka(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        margin: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.black, width: 4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              offset: const Offset(8, 8),
+              blurRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'OOPS!',
+              style: GoogleFonts.fredoka(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _error,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildNeoButton(
+              text: 'TRY AGAIN',
+              color: const Color(0xFFFF5FCF),
+              onPressed: _startOver,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSwipeScreen() {
     final restaurant = _restaurants[_currentIndex];
     return Column(
       children: [
         const SizedBox(height: 16),
-        // Progress bar and counter
+        // Enhanced progress section
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: [
-              Text('SWIPE TO CHOOSE!', style: GoogleFonts.luckiestGuy(fontSize: 32, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              Text(
+                'SWIPE TO CHOOSE!',
+                style: GoogleFonts.fredoka(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.25),
+                            offset: const Offset(4, 4),
+                            blurRadius: 0,
                           ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: LinearProgressIndicator(
+                          value: (_currentIndex + 1) / _restaurants.length,
+                          backgroundColor: Colors.transparent,
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF5FCF)),
                         ),
-                        Container(
-                          height: 12,
-                          width: (( _currentIndex + 1 ) / 10) * MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFF5FCF),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.black, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          offset: const Offset(4, 4),
+                          blurRadius: 0,
                         ),
                       ],
                     ),
+                    child: Text(
+                      '${_currentIndex + 1}/${_restaurants.length}',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  Text('${_currentIndex + 1}/10', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 18)),
                 ],
               ),
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 32),
+        // Enhanced card stack
         Expanded(
-          child: Center(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (_currentIndex < _restaurants.length - 1)
-                  _RestaurantCard(
-                    restaurant: _restaurants[_currentIndex + 1],
-                    scale: 0.95,
-                    opacity: 0.7,
-                    offset: 20,
-                  ),
-                GestureDetector(
-                  onHorizontalDragStart: _onDragStart,
-                  onHorizontalDragUpdate: _onDragUpdate,
-                  onHorizontalDragEnd: _onDragEnd,
-                  child: Transform.translate(
-                    offset: Offset(_dragDx, 0),
-                    child: Transform.rotate(
-                      angle: _dragDx * 0.002,
-                      child: _RestaurantCard(
-                        restaurant: restaurant,
-                        scale: 1.0,
-                        opacity: 1.0,
-                        offset: 0,
+          child: AnimatedBuilder(
+            animation: _cardAnimation,
+            builder: (context, child) {
+              return Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Background cards
+                    if (_currentIndex < _restaurants.length - 1)
+                      _RestaurantCard(
+                        restaurant: _restaurants[_currentIndex + 1],
+                        scale: 0.92,
+                        opacity: 0.6,
+                        offset: 20,
+                      ),
+                    if (_currentIndex < _restaurants.length - 2)
+                      _RestaurantCard(
+                        restaurant: _restaurants[_currentIndex + 2],
+                        scale: 0.85,
+                        opacity: 0.3,
+                        offset: 40,
+                      ),
+                    // Main card
+                    GestureDetector(
+                      onHorizontalDragStart: _onDragStart,
+                      onHorizontalDragUpdate: _onDragUpdate,
+                      onHorizontalDragEnd: _onDragEnd,
+                      child: Transform.translate(
+                        offset: Offset(_dragDx, 0),
+                        child: Transform.rotate(
+                          angle: _dragDx * 0.001,
+                          child: Transform.scale(
+                            scale: _cardAnimation.value,
+                            child: _RestaurantCard(
+                              restaurant: restaurant,
+                              scale: 1.0,
+                              opacity: 1.0,
+                              offset: 0,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    // Swipe indicators
+                    if (_dragDx > 50)
+                      Positioned(
+                        top: 80,
+                        left: 40,
+                        child: Transform.rotate(
+                          angle: -0.3,
+                          child: Opacity(
+                            opacity: min(_dragDx / 150, 1),
+                            child: _SwipeIndicator(
+                              label: 'LOVE IT!',
+                              color: const Color(0xFF39FF6A),
+                              icon: Icons.favorite,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (_dragDx < -50)
+                      Positioned(
+                        top: 80,
+                        right: 40,
+                        child: Transform.rotate(
+                          angle: 0.3,
+                          child: Opacity(
+                            opacity: min(-_dragDx / 150, 1),
+                            child: _SwipeIndicator(
+                              label: 'NOPE!',
+                              color: const Color(0xFFFF6B6B),
+                              icon: Icons.close,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                if (_dragDx > 40)
-                  Positioned(
-                    top: 60,
-                    left: 40,
-                    child: Opacity(
-                      opacity: min(_dragDx / 120, 1),
-                      child: _SwipeIndicator(label: 'LIKE', color: Colors.green),
-                    ),
-                  ),
-                if (_dragDx < -40)
-                  Positioned(
-                    top: 60,
-                    right: 40,
-                    child: Opacity(
-                      opacity: min(-_dragDx / 120, 1),
-                      child: _SwipeIndicator(label: 'NOPE', color: Colors.red),
-                    ),
-                  ),
-              ],
-            ),
+              );
+            },
           ),
         ),
-        // X and Love buttons
+        // Enhanced action buttons
         Padding(
-          padding: const EdgeInsets.only(bottom: 32.0, top: 8.0),
+          padding: const EdgeInsets.only(bottom: 40.0, top: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: _skipCurrent,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.red,
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(20),
-                  elevation: 4,
-                  side: const BorderSide(color: Colors.red, width: 2),
-                ),
-                child: const Icon(Icons.close, size: 36),
+              AnimatedBuilder(
+                animation: _buttonAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _buttonAnimation.value,
+                    child: _ActionButton(
+                      icon: Icons.close,
+                      color: const Color(0xFFFF6B6B),
+                      onPressed: () {
+                        _buttonAnimationController.forward().then((_) {
+                          _buttonAnimationController.reverse();
+                        });
+                        _skipCurrent();
+                      },
+                    ),
+                  );
+                },
               ),
-              const SizedBox(width: 40),
-              ElevatedButton(
-                onPressed: _likeCurrent,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.green,
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(20),
-                  elevation: 4,
-                  side: const BorderSide(color: Colors.green, width: 2),
-                ),
-                child: const Icon(Icons.favorite, size: 36),
+              const SizedBox(width: 60),
+              AnimatedBuilder(
+                animation: _buttonAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _buttonAnimation.value,
+                    child: _ActionButton(
+                      icon: Icons.favorite,
+                      color: const Color(0xFF39FF6A),
+                      onPressed: () {
+                        _buttonAnimationController.forward().then((_) {
+                          _buttonAnimationController.reverse();
+                        });
+                        _likeCurrent();
+                      },
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -296,69 +603,115 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> {
     );
   }
 
-  Widget _buildEndScreen(BuildContext context) {
+  Widget _buildEndScreen() {
     return Container(
       width: double.infinity,
       height: double.infinity,
       color: const Color(0xFF39FF6A),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
+          padding: const EdgeInsets.all(40),
+          margin: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: Colors.black, width: 4),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
-                blurRadius: 16,
-                offset: const Offset(8, 8),
+                color: Colors.black.withOpacity(0.25),
+                offset: const Offset(12, 12),
+                blurRadius: 0,
               ),
             ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('ALL DONE!', style: GoogleFonts.luckiestGuy(fontSize: 38, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              Text('You liked ${_liked.length} restaurants', style: GoogleFonts.montserrat(fontSize: 20)),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: 320,
-                child: ElevatedButton(
-                  onPressed: _spinFromPicks,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF5FCF),
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    textStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
-                    elevation: 6,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                    side: const BorderSide(color: Colors.black, width: 2),
-                  ),
-                  child: const Text('SPIN FROM YOUR PICKS! →'),
+              const Icon(
+                Icons.celebration,
+                size: 64,
+                color: Color(0xFFFF5FCF),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'ALL DONE!',
+                style: GoogleFonts.fredoka(
+                  fontSize: 42,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: 320,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3DDCFF),
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    textStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
-                    elevation: 6,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                    side: const BorderSide(color: Colors.black, width: 2),
-                  ),
-                  child: const Text('START OVER'),
+              const SizedBox(height: 8),
+              Text(
+                'You liked ${_liked.length} restaurants',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  color: Colors.grey[700],
                 ),
+              ),
+              const SizedBox(height: 32),
+              _buildNeoButton(
+                text: 'SPIN FROM YOUR PICKS! 🎲',
+                color: const Color(0xFFFF5FCF),
+                onPressed: _spinFromPicks,
+              ),
+              const SizedBox(height: 16),
+              _buildNeoButton(
+                text: 'START OVER',
+                color: const Color(0xFF3DDCFF),
+                onPressed: _startOver,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNeoButton({
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Colors.black, width: 3),
+          ),
+        ).copyWith(
+          shadowColor: MaterialStateProperty.all(Colors.transparent),
+          overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Colors.black.withOpacity(0.1);
+            }
+            return null;
+          }),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                offset: const Offset(4, 4),
+                blurRadius: 0,
+              ),
+            ],
+          ),
+          child: Text(
+            text,
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ),
@@ -389,71 +742,133 @@ class _RestaurantCard extends StatelessWidget {
         child: Container(
           width: 340,
           margin: EdgeInsets.only(top: offset, bottom: 16),
-          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black, width: 4),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.12),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(0.25),
+                offset: const Offset(8, 8),
+                blurRadius: 0,
               ),
             ],
-            border: Border.all(color: Colors.black, width: 2),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
                 child: Image.network(
                   restaurant['image'],
                   width: double.infinity,
-                  height: 160,
+                  height: 200,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: double.infinity,
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.restaurant,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                restaurant['name'],
-                style: GoogleFonts.montserrat(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Icon(Icons.restaurant_menu, color: Colors.grey[700], size: 20),
-                  const SizedBox(width: 6),
-                  Text(
-                    restaurant['cuisine'],
-                    style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  const Spacer(),
-                  Icon(Icons.star, color: Colors.amber, size: 20),
-                  const SizedBox(width: 2),
-                  Text(
-                    restaurant['rating'].toString(),
-                    style: GoogleFonts.montserrat(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.location_on, color: Colors.red[400], size: 18),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      restaurant['address'],
-                      style: GoogleFonts.montserrat(fontSize: 15, fontWeight: FontWeight.w400),
-                      overflow: TextOverflow.ellipsis,
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      restaurant['name'],
+                      style: GoogleFonts.inter(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3DDCFF),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Text(
+                            restaurant['cuisine'],
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            const Icon(Icons.star, color: Color(0xFFFFD700), size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              restaurant['rating'].toString(),
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, color: Color(0xFFFF6B6B), size: 18),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            restaurant['address'],
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          'Price: ',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        Text(
+                          '\$' * (restaurant['priceLevel'] ?? 2),
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF39FF6A),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -466,23 +881,96 @@ class _RestaurantCard extends StatelessWidget {
 class _SwipeIndicator extends StatelessWidget {
   final String label;
   final Color color;
-  const _SwipeIndicator({required this.label, required this.color, Key? key}) : super(key: key);
+  final IconData icon;
+
+  const _SwipeIndicator({
+    required this.label,
+    required this.color,
+    required this.icon,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        border: Border.all(color: color, width: 2),
-        borderRadius: BorderRadius.circular(8),
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            offset: const Offset(4, 4),
+            blurRadius: 0,
+          ),
+        ],
       ),
-      child: Text(
-        label,
-        style: GoogleFonts.montserrat(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: color,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.black, size: 24),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const _ActionButton({
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black, width: 4),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.25),
+            offset: const Offset(6, 6),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 32,
+              color: Colors.black,
+            ),
+          ),
         ),
       ),
     );
