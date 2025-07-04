@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Stop overthinking, start eating! 🍕',
+                      '🥞 Stop overthinking, start eating! 🍽️',
                       style: GoogleFonts.montserrat(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
@@ -94,18 +94,24 @@ class HomeScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         const Text(
-                          '🍴',
+                          '🍕',
                           style: TextStyle(fontSize: 28),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'No more "I don\'t know, what do you want?" conversations!',
+                            'Tired of the "I don\'t know, what do you want?" debate? Let WhatToEat spin, swipe, and solve it for you!',
                             style: GoogleFonts.montserrat(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.justify,
                           ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          '🍩',
+                          style: TextStyle(fontSize: 28),
                         ),
                       ],
                     ),

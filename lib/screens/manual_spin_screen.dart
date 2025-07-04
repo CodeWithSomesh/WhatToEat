@@ -78,194 +78,144 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, size: 32),
-                        onPressed: () => Navigator.of(context).pop(),
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back, size: 32),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const Spacer(),
+                        Text(
+                          'SPIN THE WHEEL!',
+                          style: GoogleFonts.luckiestGuy(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(flex: 2),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: AnimatedBuilder(
+                      animation: _animation,
+                      builder: (context, child) {
+                        return CustomPaint(
+                          painter: _WheelPainter(
+                            options: options,
+                            angle: _animation.value,
+                          ),
+                          child: SizedBox(
+                            width: 220,
+                            height: 220,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: SizedBox(
+                      width: 180,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.play_arrow),
+                        label: Text('SPIN!', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF5FCF),
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
+                          textStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
+                          elevation: 8,
+                          shadowColor: Colors.black,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        ).copyWith(
+                          elevation: MaterialStateProperty.all(8),
+                        ),
+                        onPressed: _isSpinning ? null : () => _spinWheel(options),
                       ),
-                      const Spacer(),
-                      Text(
-                        'SPIN THE WHEEL!',
-                        style: GoogleFonts.luckiestGuy(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  if (_lastResult != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Transform.rotate(
+                        angle: -0.05,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF39FF6A),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.shade700.withOpacity(0.3),
+                                offset: const Offset(4, 4),
+                                blurRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "YOU'RE EATING:",
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                _lastResult!,
+                                style: GoogleFonts.luckiestGuy(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      const Spacer(flex: 2),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return CustomPaint(
-                      painter: _WheelPainter(
-                        options: options,
-                        angle: _animation.value,
-                      ),
-                      child: SizedBox(
-                        width: 220,
-                        height: 220,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text('SPIN!', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF5FCF),
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
-                    textStyle: GoogleFonts.montserrat(fontSize: 20, fontWeight: FontWeight.bold),
-                    elevation: 8,
-                    shadowColor: Colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                  ).copyWith(
-                    elevation: MaterialStateProperty.all(8),
-                  ),
-                  onPressed: _isSpinning ? null : () => _spinWheel(options),
-                ),
-                const SizedBox(height: 18),
-                if (_lastResult != null)
+                    ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Transform.rotate(
-                      angle: -0.05,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.22,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF39FF6A),
-                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFFFFB347),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: Colors.black, width: 3),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.green.shade700.withOpacity(0.3),
+                              color: Colors.orange.shade700,
                               offset: const Offset(4, 4),
                               blurRadius: 0,
                             ),
                           ],
                         ),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "YOU'RE EATING:",
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 20,
-                              ),
-                            ),
-                            Text(
-                              _lastResult!,
-                              style: GoogleFonts.luckiestGuy(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3DDCFF),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.black, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.shade700,
-                          offset: const Offset(4, 4),
-                          blurRadius: 0,
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('ADD FOOD OPTION',
-                            style: GoogleFonts.montserrat(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            )),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _controller,
-                                decoration: InputDecoration(
-                                  hintText: 'Enter food option...',
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                    borderSide: const BorderSide(color: Colors.black, width: 2),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                ),
-                                onSubmitted: (val) => _addOption(context),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Material(
-                              color: const Color(0xFF39FF6A),
-                              borderRadius: BorderRadius.circular(4),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(4),
-                                onTap: () => _addOption(context),
-                                child: const SizedBox(
-                                  width: 40,
-                                  height: 40,
-                                  child: Icon(Icons.add, color: Colors.black, size: 28),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFB347),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: Colors.black, width: 3),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.orange.shade700,
-                            offset: const Offset(4, 4),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('YOUR OPTIONS (${options.length})',
-                              style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 18,
-                              )),
-                          const SizedBox(height: 8),
-                          Expanded(
-                            child: ListView.builder(
+                            Text('YOUR OPTIONS (${options.length})',
+                                style: GoogleFonts.montserrat(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                )),
+                            const SizedBox(height: 8),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: options.length,
                               itemBuilder: (context, idx) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -286,14 +236,77 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3DDCFF),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.black, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.shade700,
+                            offset: const Offset(4, 4),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('ADD FOOD OPTION',
+                              style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 18,
+                              )),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _controller,
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter food option...',
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                      borderSide: const BorderSide(color: Colors.black, width: 2),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  ),
+                                  onSubmitted: (val) => _addOption(context),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Material(
+                                color: const Color(0xFF39FF6A),
+                                borderRadius: BorderRadius.circular(4),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(4),
+                                  onTap: () => _addOption(context),
+                                  child: const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Icon(Icons.add, color: Colors.black, size: 28),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-              ],
+                ],
+              ),
             ),
             Align(
               alignment: Alignment.topCenter,
@@ -356,6 +369,40 @@ class _WheelPainter extends CustomPainter {
         true,
         paint,
       );
+      // Draw option text
+      if (options.isNotEmpty) {
+        final textPainter = TextPainter(
+          text: TextSpan(
+            text: options[i],
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout(
+          minWidth: 0,
+          maxWidth: radius * 1.2,
+        );
+        final textAngle = start + anglePer / 2;
+        final textRadius = radius * 0.65;
+        final textOffset = Offset(
+          center.dx + textRadius * cos(textAngle) - textPainter.width / 2,
+          center.dy + textRadius * sin(textAngle) - textPainter.height / 2,
+        );
+        canvas.save();
+        canvas.translate(
+          center.dx + textRadius * cos(textAngle),
+          center.dy + textRadius * sin(textAngle),
+        );
+        canvas.rotate(textAngle + pi / 2);
+        canvas.translate(-textPainter.width / 2, -textPainter.height / 2);
+        textPainter.paint(canvas, Offset.zero);
+        canvas.restore();
+      }
       start += anglePer;
     }
     // Draw border
