@@ -44,6 +44,7 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
     super.dispose();
   }
 
+
   Future<void> _spinWheel() async {
     if (_currentOptions.isEmpty || _isSpinning) return;
     setState(() => _isSpinning = true);
@@ -230,7 +231,7 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                   const SizedBox(height: 18),
                   // The Selected Restaurants card
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: MediaQuery.of(context).size.height * 0.22,
@@ -289,6 +290,7 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                       ),
                     ),
                   ),
+                  // Add top margin before the button row
                   const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
