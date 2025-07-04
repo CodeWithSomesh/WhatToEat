@@ -114,8 +114,8 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                             angle: _animation.value,
                           ),
                           child: SizedBox(
-                            width: 220,
-                            height: 220,
+                            width: 360, // Increased size
+                            height: 360, // Increased size
                           ),
                         );
                       },
@@ -398,7 +398,7 @@ class _WheelPainter extends CustomPainter {
           center.dx + textRadius * cos(textAngle),
           center.dy + textRadius * sin(textAngle),
         );
-        canvas.rotate(textAngle + pi / 2);
+        canvas.rotate(textAngle + pi / 2); // Rotate text with the segment
         canvas.translate(-textPainter.width / 2, -textPainter.height / 2);
         textPainter.paint(canvas, Offset.zero);
         canvas.restore();
