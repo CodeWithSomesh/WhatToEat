@@ -53,7 +53,13 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
     final selected = random.nextInt(options.length);
     final spins = 5 + random.nextInt(3); // 5-7 full spins
     final anglePerOption = 2 * pi / options.length;
-    final targetAngle = (spins * 2 * pi) + (selected * anglePerOption) + anglePerOption / 2;
+
+    // Calculate the angle needed to position the selected option under the arrow
+    // The arrow points to the top (-pi/2), so we need to rotate the wheel
+    // so that the selected option is at the top position
+    final selectedOptionAngle = selected * anglePerOption + anglePerOption / 2;
+    final targetAngle = (spins * 2 * pi) + (2 * pi - selectedOptionAngle);
+
     _animation = Tween<double>(begin: 0, end: targetAngle).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
     );
@@ -114,8 +120,8 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                             angle: _animation.value,
                           ),
                           child: SizedBox(
-                            width: 220,
-                            height: 220,
+                            width: 360,
+                            height: 360,
                           ),
                         );
                       },
@@ -139,53 +145,58 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                         ).copyWith(
                           elevation: MaterialStateProperty.all(8),
                         ),
-                        onPressed: _isSpinning ? null : () => _spinWheel(options),
+                        onPressed: _isSpinning || options.isEmpty ? null : () => _spinWheel(options),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
                   if (_lastResult != null)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Transform.rotate(
-                        angle: -0.05,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF39FF6A),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.shade700.withOpacity(0.3),
-                                offset: const Offset(4, 4),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "YOU'RE EATING:",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20,
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 8.0),
+                      child: Center(
+                        child: Transform.rotate(
+                          angle: -0.05,
+                          child: Container(
+                            width: 320,
+                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF39FF6A),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.shade700.withOpacity(0.3),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 0,
                                 ),
-                              ),
-                              Text(
-                                _lastResult!,
-                                style: GoogleFonts.luckiestGuy(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "YOU'RE EATING:",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  _lastResult!,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.luckiestGuy(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: MediaQuery.of(context).size.height * 0.22,
@@ -243,7 +254,7 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                   ),
                   const SizedBox(height: 8),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFF3DDCFF),
@@ -371,24 +382,33 @@ class _WheelPainter extends CustomPainter {
       );
       // Draw option text
       if (options.isNotEmpty) {
+        // Dynamically scale font size based on option length
+        double baseFontSize = 18;
+        double fontSize = baseFontSize;
+        if (options[i].length > 14) {
+          fontSize = baseFontSize - (options[i].length - 14) * 0.7;
+          if (fontSize < 10) fontSize = 10;
+        }
         final textPainter = TextPainter(
           text: TextSpan(
             text: options[i],
             style: GoogleFonts.montserrat(
-              fontSize: 14,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
           textAlign: TextAlign.center,
           textDirection: TextDirection.ltr,
+          maxLines: 2,
+          ellipsis: '…',
         );
         textPainter.layout(
           minWidth: 0,
-          maxWidth: radius * 1.2,
+          maxWidth: radius * 1.3,
         );
         final textAngle = start + anglePer / 2;
-        final textRadius = radius * 0.65;
+        final textRadius = radius * 0.7;
         final textOffset = Offset(
           center.dx + textRadius * cos(textAngle) - textPainter.width / 2,
           center.dy + textRadius * sin(textAngle) - textPainter.height / 2,
@@ -417,8 +437,8 @@ class _WheelPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     final pointerPath = Path();
     pointerPath.moveTo(center.dx, center.dy - radius - 8);
-    pointerPath.lineTo(center.dx - 12, center.dy - radius - 28);
-    pointerPath.lineTo(center.dx + 12, center.dy - radius - 28);
+    pointerPath.lineTo(center.dx - 16, center.dy - radius - 36);
+    pointerPath.lineTo(center.dx + 16, center.dy - radius - 36);
     pointerPath.close();
     canvas.drawPath(pointerPath, pointerPaint);
   }

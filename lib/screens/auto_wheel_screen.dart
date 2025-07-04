@@ -44,6 +44,7 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
     super.dispose();
   }
 
+
   Future<void> _spinWheel() async {
     if (_currentOptions.isEmpty || _isSpinning) return;
     setState(() => _isSpinning = true);
@@ -51,7 +52,13 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
     final selected = random.nextInt(_currentOptions.length);
     final spins = 5 + random.nextInt(3); // 5-7 full spins
     final anglePerOption = 2 * pi / _currentOptions.length;
-    final targetAngle = (spins * 2 * pi) + (selected * anglePerOption) + anglePerOption / 2;
+
+    // Calculate the angle needed to position the selected option under the arrow
+    // The arrow points to the top (-pi/2), so we need to rotate the wheel
+    // so that the selected option is at the top position
+    final selectedOptionAngle = selected * anglePerOption + anglePerOption / 2;
+    final targetAngle = (spins * 2 * pi) + (2 * pi - selectedOptionAngle);
+
     _animation = Tween<double>(begin: 0, end: targetAngle).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
     );
@@ -174,10 +181,57 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                       ),
                     ),
                   ),
+                  // Show result card directly below the Spin button
+                  if (_lastResult != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                      child: Center(
+                        child: Transform.rotate(
+                          angle: -0.05,
+                          child: Container(
+                            width: 320,
+                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF39FF6A),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.shade700.withOpacity(0.3),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "YOU'RE EATING:",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  _lastResult!,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.luckiestGuy(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 18),
                   // The Selected Restaurants card
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: MediaQuery.of(context).size.height * 0.22,
@@ -207,76 +261,37 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                                 )),
                             const SizedBox(height: 8),
                             _currentOptions.isEmpty
-                              ? Text('No restaurants selected.', style: GoogleFonts.montserrat(color: Colors.white70))
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: _currentOptions.length,
-                                  itemBuilder: (context, idx) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.black, width: 2),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: ListTile(
-                                        title: Text(_currentOptions[idx],
-                                            style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
-                                        trailing: IconButton(
-                                          icon: const Icon(Icons.delete, color: Color(0xFFA259FF)),
-                                          onPressed: () => _removeOption(idx),
-                                        ),
-                                      ),
+                                ? Text('No restaurants selected.', style: GoogleFonts.montserrat(color: Colors.white70))
+                                : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _currentOptions.length,
+                              itemBuilder: (context, idx) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black, width: 2),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: ListTile(
+                                    title: Text(_currentOptions[idx],
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete, color: Color(0xFFA259FF)),
+                                      onPressed: () => _removeOption(idx),
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
+                  // Add top margin before the button row
                   const SizedBox(height: 18),
-                  if (_lastResult != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Transform.rotate(
-                        angle: -0.05,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF39FF6A),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.shade700.withOpacity(0.3),
-                                offset: const Offset(4, 4),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "YOU'RE EATING:",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              Text(
-                                _lastResult!,
-                                style: GoogleFonts.luckiestGuy(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -411,4 +426,4 @@ class _AutoWheelPainter extends CustomPainter {
     return oldDelegate.options.length != options.length ||
         oldDelegate.angle != angle;
   }
-} 
+}
