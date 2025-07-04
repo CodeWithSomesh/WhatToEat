@@ -114,8 +114,8 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                             angle: _animation.value,
                           ),
                           child: SizedBox(
-                            width: 360, // Increased size
-                            height: 360, // Increased size
+                            width: 360,
+                            height: 360,
                           ),
                         );
                       },
@@ -139,53 +139,58 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                         ).copyWith(
                           elevation: MaterialStateProperty.all(8),
                         ),
-                        onPressed: _isSpinning ? null : () => _spinWheel(options),
+                        onPressed: _isSpinning || options.isEmpty ? null : () => _spinWheel(options), // Disable if no options
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
                   if (_lastResult != null)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Transform.rotate(
-                        angle: -0.05,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF39FF6A),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.shade700.withOpacity(0.3),
-                                offset: const Offset(4, 4),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "YOU'RE EATING:",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20,
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 8.0), // Adjusted top padding
+                      child: Center(
+                        child: Transform.rotate(
+                          angle: -0.05,
+                          child: Container(
+                            width: 320, // Constrain width
+                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF39FF6A),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.shade700.withOpacity(0.3),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 0,
                                 ),
-                              ),
-                              Text(
-                                _lastResult!,
-                                style: GoogleFonts.luckiestGuy(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "YOU'RE EATING:",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  _lastResult!,
+                                  textAlign: TextAlign.center, // Center the text
+                                  maxLines: 2, // Allow max 2 lines
+                                  overflow: TextOverflow.ellipsis, // Add ellipsis if too long
+                                  style: GoogleFonts.luckiestGuy(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0), // Adjusted padding
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: MediaQuery.of(context).size.height * 0.22,
@@ -243,7 +248,7 @@ class _ManualSpinScreenState extends State<ManualSpinScreen>
                   ),
                   const SizedBox(height: 8),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjusted padding
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFF3DDCFF),
@@ -398,7 +403,7 @@ class _WheelPainter extends CustomPainter {
           center.dx + textRadius * cos(textAngle),
           center.dy + textRadius * sin(textAngle),
         );
-        canvas.rotate(textAngle + pi / 2); // Rotate text with the segment
+        canvas.rotate(textAngle + pi / 2);
         canvas.translate(-textPainter.width / 2, -textPainter.height / 2);
         textPainter.paint(canvas, Offset.zero);
         canvas.restore();
