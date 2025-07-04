@@ -180,6 +180,53 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                       ),
                     ),
                   ),
+                  // Show result card directly below the Spin button
+                  if (_lastResult != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                      child: Center(
+                        child: Transform.rotate(
+                          angle: -0.05,
+                          child: Container(
+                            width: 320,
+                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF39FF6A),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.shade700.withOpacity(0.3),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "YOU'RE EATING:",
+                                  style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  _lastResult!,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.luckiestGuy(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 18),
                   // The Selected Restaurants card
                   Padding(
@@ -243,46 +290,6 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                     ),
                   ),
                   const SizedBox(height: 18),
-                  if (_lastResult != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Transform.rotate(
-                        angle: -0.05,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF39FF6A),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.shade700.withOpacity(0.3),
-                                offset: const Offset(4, 4),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                "YOU'RE EATING:",
-                                style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              Text(
-                                _lastResult!,
-                                style: GoogleFonts.luckiestGuy(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
