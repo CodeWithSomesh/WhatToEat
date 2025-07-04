@@ -51,7 +51,13 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
     final selected = random.nextInt(_currentOptions.length);
     final spins = 5 + random.nextInt(3); // 5-7 full spins
     final anglePerOption = 2 * pi / _currentOptions.length;
-    final targetAngle = (spins * 2 * pi) + (selected * anglePerOption) + anglePerOption / 2;
+
+    // Calculate the angle needed to position the selected option under the arrow
+    // The arrow points to the top (-pi/2), so we need to rotate the wheel
+    // so that the selected option is at the top position
+    final selectedOptionAngle = selected * anglePerOption + anglePerOption / 2;
+    final targetAngle = (spins * 2 * pi) + (2 * pi - selectedOptionAngle);
+
     _animation = Tween<double>(begin: 0, end: targetAngle).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuart),
     );
@@ -207,30 +213,30 @@ class _AutoWheelScreenState extends State<AutoWheelScreen> with SingleTickerProv
                                 )),
                             const SizedBox(height: 8),
                             _currentOptions.isEmpty
-                              ? Text('No restaurants selected.', style: GoogleFonts.montserrat(color: Colors.white70))
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: _currentOptions.length,
-                                  itemBuilder: (context, idx) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.black, width: 2),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: ListTile(
-                                        title: Text(_currentOptions[idx],
-                                            style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
-                                        trailing: IconButton(
-                                          icon: const Icon(Icons.delete, color: Color(0xFFA259FF)),
-                                          onPressed: () => _removeOption(idx),
-                                        ),
-                                      ),
+                                ? Text('No restaurants selected.', style: GoogleFonts.montserrat(color: Colors.white70))
+                                : ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _currentOptions.length,
+                              itemBuilder: (context, idx) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black, width: 2),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: ListTile(
+                                    title: Text(_currentOptions[idx],
+                                        style: GoogleFonts.montserrat(fontWeight: FontWeight.w600)),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.delete, color: Color(0xFFA259FF)),
+                                      onPressed: () => _removeOption(idx),
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -411,4 +417,4 @@ class _AutoWheelPainter extends CustomPainter {
     return oldDelegate.options.length != options.length ||
         oldDelegate.angle != angle;
   }
-} 
+}
