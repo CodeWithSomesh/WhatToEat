@@ -35,7 +35,7 @@ dependencies:
   #google_place: ^0.4.7
   #geolocator: ^10.0.1
   geolocator: ^9.0.2
-  permission_handler: ^10.4.3
+  permission_handler: ^12.0.1
   http: ^1.1.0
   # flutter_tindercard: ^0.3.0
   # flutter_spinning_wheel: ^2.0.0

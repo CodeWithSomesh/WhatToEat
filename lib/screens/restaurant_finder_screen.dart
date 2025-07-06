@@ -15,7 +15,7 @@ class RestaurantFinderScreen extends StatefulWidget {
   State<RestaurantFinderScreen> createState() => _RestaurantFinderScreenState();
 }
 
-class _RestaurantFinderScreenState extends State<RestaurantFinderScreen> 
+class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
     with TickerProviderStateMixin {
   List<Map<String, dynamic>> _restaurants = [];
   int _currentIndex = 0;
@@ -58,23 +58,53 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
 
   Future<void> _fetchNearbyRestaurants() async {
     try {
+      Position position;
+
       if (!kIsWeb) {
-        // Request location permissions
-        final permission = await Permission.location.request();
-        if (permission != PermissionStatus.granted) {
+        // Check if location services are enabled
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
           setState(() {
-            _error = 'Location permission is required to find nearby restaurants';
+            _error = 'Location services are disabled. Please enable location services.';
             _isLoading = false;
+            _restaurants = _getDummyRestaurants();
           });
+          _cardAnimationController.forward();
           return;
         }
-      } else {
-        // On web, permissions are handled by the browser
+
+        // Check current permission status
+        LocationPermission permission = await Geolocator.checkPermission();
+
+        if (permission == LocationPermission.denied) {
+          // Request permission
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            setState(() {
+              _error = 'Location permission denied. Using sample restaurants.';
+              _isLoading = false;
+              _restaurants = _getDummyRestaurants();
+            });
+            _cardAnimationController.forward();
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          setState(() {
+            _error = 'Location permissions are permanently denied. Using sample restaurants.';
+            _isLoading = false;
+            _restaurants = _getDummyRestaurants();
+          });
+          _cardAnimationController.forward();
+          return;
+        }
       }
 
       // Get current location
-      final position = await Geolocator.getCurrentPosition(
+      position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.medium,
+        timeLimit: const Duration(seconds: 10),
       );
 
       // Use Google Places API (you'll need to add your API key)
@@ -86,21 +116,21 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
           '&key=$apiKey';
 
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final results = data['results'] as List;
-        
+
         setState(() {
           _restaurants = results.take(15).map((restaurant) {
             final photos = restaurant['photos'] as List?;
             final photoReference = (photos != null && photos.isNotEmpty)
                 ? photos[0]['photo_reference']
                 : null;
-            
+
             return {
               'name': restaurant['name'] ?? 'Unknown Restaurant',
-              'image': photoReference != null 
+              'image': photoReference != null
                   ? 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoReference&key=$apiKey'
                   : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
               'cuisine': _extractCuisineType(restaurant['types'] ?? []),
@@ -112,16 +142,15 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
           }).toList();
           _isLoading = false;
         });
-        
+
         _cardAnimationController.forward();
       } else {
-        throw Exception('Failed to load restaurants');
+        throw Exception('Failed to load restaurants from API');
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to load restaurants: $e';
+        _error = 'Using sample restaurants. Enable location for nearby results.';
         _isLoading = false;
-        // Fallback to dummy data
         _restaurants = _getDummyRestaurants();
       });
       _cardAnimationController.forward();
@@ -137,7 +166,7 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
       'meal_takeaway': 'Takeaway',
       'restaurant': 'Restaurant',
     };
-    
+
     for (String type in types) {
       if (cuisineMap.containsKey(type)) {
         return cuisineMap[type]!;
@@ -288,9 +317,9 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
           ),
         ),
       ),
-      body: _isLoading ? _buildLoadingScreen() : 
-            _error.isNotEmpty ? _buildErrorScreen() :
-            _currentIndex >= _restaurants.length ? _buildEndScreen() : _buildSwipeScreen(),
+      body: _isLoading ? _buildLoadingScreen() :
+      _error.isNotEmpty ? _buildErrorScreen() :
+      _currentIndex >= _restaurants.length ? _buildEndScreen() : _buildSwipeScreen(),
     );
   }
 
