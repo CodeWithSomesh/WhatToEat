@@ -122,7 +122,7 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
         final results = data['results'] as List;
 
         setState(() {
-          _restaurants = results.take(15).map((restaurant) {
+          _restaurants = results.take(10).map((restaurant) {
             final photos = restaurant['photos'] as List?;
             final photoReference = (photos != null && photos.isNotEmpty)
                 ? photos[0]['photo_reference']
@@ -295,6 +295,7 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
         child: AppBar(
           backgroundColor: const Color(0xFFFFFF4D),
           elevation: 0,
+          automaticallyImplyLeading: false,
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               color: Color(0xFF3DDCFF),
@@ -303,15 +304,42 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
               ),
             ),
             child: SafeArea(
-              child: Center(
-                child: Text(
-                  'RESTAURANT FINDER',
-                  style: GoogleFonts.fredoka(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'RESTAURANT FINDER',
+                        style: GoogleFonts.fredoka(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48), // To balance the left icon's width
+                ],
               ),
             ),
           ),
@@ -717,12 +745,7 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
           ),
         ).copyWith(
           shadowColor: MaterialStateProperty.all(Colors.transparent),
-          overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return Colors.black.withOpacity(0.1);
-            }
-            return null;
-          }),
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -783,127 +806,167 @@ class _RestaurantCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-                child: Image.network(
-                  restaurant['image'],
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: double.infinity,
-                      height: 200,
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.restaurant,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      restaurant['name'],
-                      style: GoogleFonts.inter(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3DDCFF),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.black, width: 2),
-                          ),
-                          child: Text(
-                            restaurant['cuisine'],
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                            ),
-                          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: Image.network(
+                    restaurant['image'],
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.restaurant,
+                          size: 64,
+                          color: Colors.grey,
                         ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            const Icon(Icons.star, color: Color(0xFFFFD700), size: 20),
-                            const SizedBox(width: 4),
-                            Text(
-                              restaurant['rating'].toString(),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        restaurant['name'],
+                        style: GoogleFonts.inter(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3DDCFF),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
+                            child: Text(
+                              restaurant['cuisine'],
                               style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.black,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Color(0xFFFF6B6B), size: 18),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            restaurant['address'],
+                          ),
+                          const Spacer(),
+                          Row(
+                            children: [
+                              const Icon(Icons.star, color: Color(0xFFFFD700), size: 20),
+                              const SizedBox(width: 4),
+                              Text(
+                                restaurant['rating'].toString(),
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.location_on, color: Color(0xFFFF6B6B), size: 18),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              restaurant['address'],
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            'Price: ',
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.grey[700],
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text(
-                          'Price: ',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: Colors.grey[700],
+                          Text(
+                            (restaurant['priceLevel'] != null && restaurant['priceLevel'] > 0)
+                              ? ('\$' * restaurant['priceLevel'])
+                              : 'N/A',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF39FF6A),
+                            ),
                           ),
-                        ),
-                        Text(
-                          '\$' * (restaurant['priceLevel'] ?? 2),
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF39FF6A),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          if (restaurant['priceLevel'] != null && restaurant['priceLevel'] > 0)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF39FF6A),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  _priceLevelLabel(restaurant['priceLevel']),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  String _priceLevelLabel(int? priceLevel) {
+    switch (priceLevel) {
+      case 1:
+        return 'Cheap';
+      case 2:
+        return 'Moderate';
+      case 3:
+        return 'Expensive';
+      case 4:
+        return 'Very Expensive';
+      default:
+        return '';
+    }
   }
 }
 
