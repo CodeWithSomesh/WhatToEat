@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.5
+  get: ^4.6.6
   #google_maps_flutter: ^2.5.0
   #google_place: ^0.4.7
   #geolocator: ^10.0.1
@@ -44,6 +45,8 @@ dependencies:
   audioplayers: ^5.2.1
   google_fonts: ^6.1.0
   confetti: ^0.7.0
+  smooth_page_indicator: ^1.1.0
+  iconsax: ^0.0.8
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -104,3 +107,6 @@ flutter:
 
   assets:
     - assets/sounds/spin.mp3
+    - assets/on_boarding_images/thinking.gif
+    - assets/on_boarding_images/spinningFood.gif
+    - assets/on_boarding_images/swipeFood.gif
