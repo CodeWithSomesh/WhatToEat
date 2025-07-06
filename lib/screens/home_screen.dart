@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
                           Text(
                             '🥞 Stop overthinking, start eating! 🍽️',
                             style: GoogleFonts.montserrat(
-                              fontSize: 18,
+                              fontSize: 17,
                               fontWeight: FontWeight.w600,
                               color: Colors.black87,
                             ),
