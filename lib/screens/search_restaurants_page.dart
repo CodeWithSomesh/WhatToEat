@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RestaurantSearchScreen extends StatefulWidget {
   const RestaurantSearchScreen({Key? key}) : super(key: key);
@@ -55,6 +57,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     );
     _getCurrentLocation();
     _loadSearchHistory();
+    _loadFavorites();
   }
 
   @override
@@ -67,6 +70,90 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     _filterAnimationController.dispose();
     super.dispose();
   }
+
+  Future<void> _loadFavorites() async {
+    try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('favorites')
+            .get();
+        
+        setState(() {
+            _favoriteRestaurants = doc.docs.map((doc) => doc.id).toList();
+        });
+        }
+    } catch (e) {
+        print('Error loading favorites: $e');
+    }
+    }
+
+    Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+        try {
+            final user = FirebaseAuth.instance.currentUser;
+            if (user == null) return;
+            
+            final placeId = restaurant['placeId'];
+            final isFavorite = _favoriteRestaurants.contains(placeId);
+            
+            if (isFavorite) {
+            // Remove from favorites
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('favorites')
+                .doc(placeId)
+                .delete();
+                
+            setState(() {
+                _favoriteRestaurants.remove(placeId);
+            });
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                content: Text('Removed ${restaurant['name']} from favorites'),
+                backgroundColor: const Color(0xFFFF5FCF),
+                ),
+            );
+            } else {
+            // Add to favorites
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('favorites')
+                .doc(placeId)
+                .set({
+                    'name': restaurant['name'],
+                    'cuisine': restaurant['cuisine'],
+                    'rating': restaurant['rating'],
+                    'address': restaurant['address'],
+                    'priceLevel': restaurant['priceLevel'],
+                    'image': restaurant['image'],
+                    'addedAt': FieldValue.serverTimestamp(),
+                });
+                
+            setState(() {
+                _favoriteRestaurants.add(placeId);
+            });
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                content: Text('Added ${restaurant['name']} to favorites'),
+                backgroundColor: const Color(0xFF39FF6A),
+                ),
+            );
+            }
+        } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Error updating favorites: $e'),
+                backgroundColor: const Color(0xFFFF5FCF),
+            ),
+            );
+        }
+    }
 
   Future<void> _getCurrentLocation() async {
     try {
@@ -578,29 +665,31 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                 
                 // Action buttons
                 Row(
-                  children: [
-                    Expanded(
-                      child: _buildNeoButton(
-                        text: 'VIEW DETAILS',
-                        color: const Color(0xFF3DDCFF),
-                        onPressed: () {
-                          // Navigate to restaurant details
-                          _showRestaurantDetails(restaurant);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildNeoButton(
-                        text: 'DIRECTIONS',
-                        color: const Color(0xFFFF5FCF),
-                        onPressed: () {
-                          // Open maps for directions
-                          _openDirections(restaurant);
-                        },
-                      ),
-                    ),
-                  ],
+                    children: [
+                        Expanded(
+                        child: _buildNeoButton(
+                            text: 'VIEW DETAILS',
+                            color: const Color(0xFF3DDCFF),
+                            onPressed: () {
+                            _showRestaurantDetails(restaurant);
+                            },
+                        ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                        child: _buildNeoButton(
+                            text: _favoriteRestaurants.contains(restaurant['placeId']) 
+                                ? 'REMOVE FAVORITE' 
+                                : 'ADD FAVORITE',
+                            color: _favoriteRestaurants.contains(restaurant['placeId'])
+                                ? const Color(0xFFFF5FCF)
+                                : const Color(0xFF39FF6A),
+                            onPressed: () {
+                            _toggleFavorite(restaurant);
+                            },
+                        ),
+                        ),
+                    ],
                 ),
               ],
             ),
@@ -707,16 +796,22 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                 const SizedBox(height: 16),
                 
                 SizedBox(
-                  width: double.infinity,
-                  child: _buildNeoButton(
-                    text: 'GET DIRECTIONS',
-                    color: const Color(0xFF39FF6A),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _openDirections(restaurant);
-                    },
-                    icon: Icons.directions,
-                  ),
+                    width: double.infinity,
+                    child: _buildNeoButton(
+                        text: _favoriteRestaurants.contains(restaurant['placeId']) 
+                            ? 'REMOVE FROM FAVORITES' 
+                            : 'ADD TO FAVORITES',
+                        color: _favoriteRestaurants.contains(restaurant['placeId'])
+                            ? const Color(0xFFFF5FCF)
+                            : const Color(0xFF39FF6A),
+                        onPressed: () {
+                        Navigator.of(context).pop();
+                        _toggleFavorite(restaurant);
+                        },
+                        icon: _favoriteRestaurants.contains(restaurant['placeId'])
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                    ),
                 ),
               ],
             ),
@@ -726,31 +821,33 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     );
   }
 
-  void _openDirections(Map<String, dynamic> restaurant) {
-    // This would typically open the maps app with directions
-    // For now, we'll just show a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening directions to ${restaurant['name']}'),
-        backgroundColor: const Color(0xFF3DDCFF),
-      ),
-    );
-  }
+//   void _openDirections(Map<String, dynamic> restaurant) {
+//     // This would typically open the maps app with directions
+//     // For now, we'll just show a snackbar
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text('Opening directions to ${restaurant['name']}'),
+//         backgroundColor: const Color(0xFF3DDCFF),
+//       ),
+//     );
+//   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFF4D),
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildSearchSection(),
-          if (_showFilters) _buildFiltersSection(),
-          Expanded(child: _buildResultsSection()),
-        ],
-      ),
-    );
-  }
+    Widget build(BuildContext context) {
+        return Scaffold(
+            backgroundColor: const Color(0xFFFFFF4D),
+            appBar: _buildAppBar(),
+            body: SingleChildScrollView(
+            child: Column(
+                children: [
+                _buildSearchSection(),
+                if (_showFilters) _buildFiltersSection(),
+                _buildResultsSection(),
+                ],
+            ),
+            ),
+        );
+    }
 
   PreferredSize _buildAppBar() {
     return PreferredSize(
@@ -1141,10 +1238,13 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 // 2. Complete the _buildResultsSection() method
 Widget _buildResultsSection() {
   if (_isLoading) {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-        strokeWidth: 3,
+    return SizedBox(
+      height: 200,
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+          strokeWidth: 3,
+        ),
       ),
     );
   }
@@ -1152,6 +1252,7 @@ Widget _buildResultsSection() {
   if (_error.isNotEmpty) {
     return Center(
       child: Container(
+        height: 200,
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
