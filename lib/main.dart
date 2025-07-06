@@ -2,28 +2,14 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/onboarding.dart';
 import 'screens/search_restaurants_page.dart';
+import 'screens/favourites_page.dart';
+import 'screens/profile_page.dart';
+import 'screens/login_page.dart';
+import 'screens/register_page.dart';
 import 'package:provider/provider.dart';
 import 'providers/options_provider.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Placeholder pages for new tabs
-class FavouritesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Favourites', style: TextStyle(fontSize: 24))),
-    );
-  }
-}
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
-    );
-  }
-}
 
 class MainNavScaffold extends StatefulWidget {
   @override
@@ -37,8 +23,8 @@ class _MainNavScaffoldState extends State<MainNavScaffold> with TickerProviderSt
   final List<Widget> _pages = [
     HomeScreen(),
     RestaurantSearchScreen(),
-    FavouritesPage(),
-    ProfilePage(),
+    const FavouritesPage(),
+    const ProfilePage(),
   ];
 
   final List<NavItem> _navItems = [
@@ -175,6 +161,8 @@ class AppRoot extends StatefulWidget {
 class _AppRootState extends State<AppRoot> {
   bool _onboardingComplete = false;
   bool _loading = true;
+  bool _showLogin = true;
+  bool _showMainApp = false;
 
   @override
   void initState() {
@@ -198,17 +186,34 @@ class _AppRootState extends State<AppRoot> {
     });
   }
 
+  void _continueToHome() {
+    setState(() {
+      _showMainApp = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Material( // Show a splash/loading screen
+      return const Material(
         child: Center(child: CircularProgressIndicator()),
       );
     }
     if (!_onboardingComplete) {
       return OnBoardingScreen(onFinish: _completeOnboarding);
     }
-    return MainNavScaffold();
+    if (_showMainApp) {
+      return MainNavScaffold();
+    }
+    return _showLogin
+      ? LoginPage(
+          onRegisterTap: () => setState(() => _showLogin = false),
+          onGuestTap: _continueToHome,
+        )
+      : RegisterPage(
+          onLoginTap: () => setState(() => _showLogin = true),
+          onGuestTap: _continueToHome,
+        );
   }
 }
 

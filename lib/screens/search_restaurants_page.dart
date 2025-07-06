@@ -25,6 +25,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
   List<Map<String, dynamic>> _searchResults = [];
   List<String> _searchHistory = [];
   List<String> _cuisineFilters = [];
+  List<Map<String, dynamic>> _favoriteRestaurants = [];
   String _selectedPriceRange = 'Any';
   double _selectedRadius = 5.0; // km
   bool _isLoading = false;
@@ -71,44 +72,212 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     super.dispose();
   }
 
-  Future<void> _loadFavorites() async {
-    try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-        final doc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('favorites')
-            .get();
+//   Future<void> _loadFavorites() async {
+//     try {
+//         final user = FirebaseAuth.instance.currentUser;
+//         if (user != null) {
+//         final doc = await FirebaseFirestore.instance
+//             .collection('users')
+//             .doc(user.uid)
+//             .collection('favorites')
+//             .get();
         
-        setState(() {
-            _favoriteRestaurants = doc.docs.map((doc) => doc.id).toList();
-        });
+//         setState(() {
+//             _favoriteRestaurants = doc.docs.map((doc) => doc.id).toList();
+//         });
+//         }
+//     } catch (e) {
+//         print('Error loading favorites: $e');
+//     }
+//   }
+
+    Future<void> _loadFavorites() async {
+        try {
+            setState(() {
+            _isLoading = true;
+            _error = '';
+            });
+
+            // Simulate network delay
+            await Future.delayed(const Duration(seconds: 1));
+
+            // Dummy data instead of Firebase
+            List<Map<String, dynamic>> favorites = [
+            {
+                'placeId': 'dummy_1',
+                'name': 'The Golden Spoon',
+                'cuisine': 'Italian',
+                'rating': 4.5,
+                'address': '123 Main Street, Downtown',
+                'priceLevel': 3,
+                'image': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 2)),
+            },
+            {
+                'placeId': 'dummy_2',
+                'name': 'Sakura Sushi Bar',
+                'cuisine': 'Japanese',
+                'rating': 4.8,
+                'address': '456 Oak Avenue, Midtown',
+                'priceLevel': 4,
+                'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 5)),
+            },
+            {
+                'placeId': 'dummy_3',
+                'name': 'Burger Paradise',
+                'cuisine': 'American',
+                'rating': 4.2,
+                'address': '789 Pine Road, Uptown',
+                'priceLevel': 2,
+                'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 1)),
+            },
+            {
+                'placeId': 'dummy_4',
+                'name': 'Spice Garden',
+                'cuisine': 'Indian',
+                'rating': 4.6,
+                'address': '321 Elm Street, Old Town',
+                'priceLevel': 2,
+                'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 3)),
+            },
+            {
+                'placeId': 'dummy_5',
+                'name': 'Le Petit Café',
+                'cuisine': 'French',
+                'rating': 4.7,
+                'address': '654 Maple Drive, French Quarter',
+                'priceLevel': 3,
+                'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 4)),
+            },
+            {
+                'placeId': 'dummy_6',
+                'name': 'Taco Fiesta',
+                'cuisine': 'Mexican',
+                'rating': 4.3,
+                'address': '987 Cedar Lane, South Side',
+                'priceLevel': 1,
+                'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&w=400&q=80',
+                'addedAt': DateTime.now().subtract(const Duration(days: 6)),
+            },
+            ];
+
+            setState(() {
+            _favoriteRestaurants = favorites;
+            _isLoading = false;
+            });
+        } catch (e) {
+            setState(() {
+            _error = 'Error loading favorites: $e';
+            _isLoading = false;
+            });
         }
-    } catch (e) {
-        print('Error loading favorites: $e');
-    }
-    }
+        }
+
+    // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+    //     try {
+    //         final user = FirebaseAuth.instance.currentUser;
+    //         if (user == null) return;
+            
+    //         final placeId = restaurant['placeId'];
+    //         final isFavorite = _favoriteRestaurants.contains(placeId);
+            
+    //         if (isFavorite) {
+    //         // Remove from favorites
+    //         await FirebaseFirestore.instance
+    //             .collection('users')
+    //             .doc(user.uid)
+    //             .collection('favorites')
+    //             .doc(placeId)
+    //             .delete();
+                
+    //         setState(() {
+    //             _favoriteRestaurants.remove(placeId);
+    //         });
+            
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //             SnackBar(
+    //             content: Text('Removed ${restaurant['name']} from favorites'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //             ),
+    //         );
+    //         } else {
+    //         // Add to favorites
+    //         await FirebaseFirestore.instance
+    //             .collection('users')
+    //             .doc(user.uid)
+    //             .collection('favorites')
+    //             .doc(placeId)
+    //             .set({
+    //                 'name': restaurant['name'],
+    //                 'cuisine': restaurant['cuisine'],
+    //                 'rating': restaurant['rating'],
+    //                 'address': restaurant['address'],
+    //                 'priceLevel': restaurant['priceLevel'],
+    //                 'image': restaurant['image'],
+    //                 'addedAt': FieldValue.serverTimestamp(),
+    //             });
+                
+    //         setState(() {
+    //             _favoriteRestaurants.add(placeId);
+    //         });
+            
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //             SnackBar(
+    //             content: Text('Added ${restaurant['name']} to favorites'),
+    //             backgroundColor: const Color(0xFF39FF6A),
+    //             ),
+    //         );
+    //         }
+    //     } catch (e) {
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //             content: Text('Error updating favorites: $e'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //         ),
+    //         );
+    //     }
+    // }
+
+    // Future<void> _toggleFavorite(String placeId, String restaurantName) async {
+    //     try {
+    //         // Simulate network delay
+    //         await Future.delayed(const Duration(milliseconds: 500));
+
+    //         setState(() {
+    //         _favoriteRestaurants.removeWhere((restaurant) => restaurant['placeId'] == placeId);
+    //         });
+
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //             content: Text('Removed $restaurantName from favorites'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //         ),
+    //         );
+    //     } catch (e) {
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //             content: Text('Error removing from favorites: $e'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //         ),
+    //         );
+    //     }
+    //    }
 
     Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
         try {
-            final user = FirebaseAuth.instance.currentUser;
-            if (user == null) return;
+            String placeId = restaurant['placeId'].toString();
             
-            final placeId = restaurant['placeId'];
-            final isFavorite = _favoriteRestaurants.contains(placeId);
+            // Check if restaurant is already in favorites
+            bool isCurrentlyFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
             
-            if (isFavorite) {
+            if (isCurrentlyFavorite) {
             // Remove from favorites
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .collection('favorites')
-                .doc(placeId)
-                .delete();
-                
             setState(() {
-                _favoriteRestaurants.remove(placeId);
+                _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
             });
             
             ScaffoldMessenger.of(context).showSnackBar(
@@ -119,23 +288,17 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
             );
             } else {
             // Add to favorites
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .collection('favorites')
-                .doc(placeId)
-                .set({
-                    'name': restaurant['name'],
-                    'cuisine': restaurant['cuisine'],
-                    'rating': restaurant['rating'],
-                    'address': restaurant['address'],
-                    'priceLevel': restaurant['priceLevel'],
-                    'image': restaurant['image'],
-                    'addedAt': FieldValue.serverTimestamp(),
-                });
-                
             setState(() {
-                _favoriteRestaurants.add(placeId);
+                _favoriteRestaurants.add({
+                'placeId': restaurant['placeId'],
+                'name': restaurant['name'],
+                'cuisine': restaurant['cuisine'] ?? 'Unknown',
+                'rating': restaurant['rating'] ?? 0.0,
+                'address': restaurant['address'] ?? 'No address available',
+                'priceLevel': restaurant['priceLevel'] ?? 2,
+                'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
+                'addedAt': DateTime.now(),
+                });
             });
             
             ScaffoldMessenger.of(context).showSnackBar(

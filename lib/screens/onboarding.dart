@@ -80,7 +80,14 @@ class OnBoardingSkip extends StatelessWidget {
               controller.skipPage();
             }
           },
-          child: Text(isLastPage ? 'Next' : 'Skip'),
+          child: Text(
+            isLastPage ? 'Next' : 'Skip',
+            style: GoogleFonts.fredoka(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              color: Colors.black,
+            ),
+          ),
         );
       }),
     );
