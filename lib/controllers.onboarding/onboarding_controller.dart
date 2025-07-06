@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:what_to_eat/screens/home_screen.dart';
 
 class OnBoardingController extends GetxController {
   static OnBoardingController get instance => Get.find();
 
   final pageController = PageController();
   Rx<int> currentPageIndex = 0.obs;
+
+  VoidCallback? onFinish;
 
   /// Update Current Index when Page Scroll
   void updatePageIndicator(index) => currentPageIndex.value = index;
@@ -19,17 +20,20 @@ class OnBoardingController extends GetxController {
 
   /// Update Current Index & jump to next page
   void nextPage() {
-    if( currentPageIndex.value == 2){
-      Get.to(HomeScreen()); ///GO HOMESCREEN
-    } else{
+    if (currentPageIndex.value == 2) {
+      if (onFinish != null) {
+        onFinish!();
+      }
+    } else {
       int page = currentPageIndex.value + 1;
       pageController.jumpToPage(page);
     }
   }
 
-
   /// Update Current Index & jump to last page
   void skipPage() {
-    Get.to(HomeScreen()); ///GO HOMESCREEN
+    if (onFinish != null) {
+      onFinish!();
+    }
   }
 }

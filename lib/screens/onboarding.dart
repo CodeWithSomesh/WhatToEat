@@ -7,11 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 class OnBoardingScreen extends StatelessWidget {
-  const OnBoardingScreen({super.key});
+  final VoidCallback onFinish;
+  const OnBoardingScreen({Key? key, required this.onFinish}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OnBoardingController());
+    controller.onFinish = onFinish;
 
     return Scaffold(
       body: Stack(
