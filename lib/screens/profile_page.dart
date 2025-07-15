@@ -1,25 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:what_to_eat/auth/auth_service.dart';
+import 'login_page.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final VoidCallback? onLogout;
+  const ProfilePage({Key? key, this.onLogout}) : super(key: key);
 
   Future<void> _logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await authService.value.signOut();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Logged out successfully'),
           backgroundColor: const Color(0xFF3DDCFF),
+          duration: const Duration(seconds: 2),
         ),
       );
-      // Optionally, navigate to login/onboarding page
+
+      // Navigate back to login page
+      if (onLogout != null) {
+        onLogout!();
+      } else {
+        // Clear all routes and go to login page
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Logout failed: $e'),
+          content: Text('Logout failed: ${e.toString()}'),
           backgroundColor: const Color(0xFFFF5FCF),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -101,14 +116,78 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-        child: _buildNeoButton(
-          text: 'LOG OUT',
-          color: const Color(0xFFFF5FCF),
-          icon: Icons.logout,
-          onPressed: () => _logout(context),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // User info section
+              StreamBuilder<User?>(
+                stream: authService.value.authStateChanges,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final user = snapshot.data!;
+                    return Column(
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF95E1D3),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.25),
+                                offset: const Offset(6, 6),
+                                blurRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            size: 60,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          user.displayName ?? 'User',
+                          style: GoogleFonts.fredoka(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          user.email ?? '',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Colors.black.withOpacity(0.7),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+
+              // Logout button
+              _buildNeoButton(
+                text: 'LOG OUT',
+                color: const Color(0xFFFF5FCF),
+                icon: Icons.logout,
+                onPressed: () => _logout(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-} 
+}

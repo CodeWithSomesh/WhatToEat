@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'providers/options_provider.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 class MainNavScaffold extends StatefulWidget {
   @override
@@ -19,7 +21,7 @@ class MainNavScaffold extends StatefulWidget {
 class _MainNavScaffoldState extends State<MainNavScaffold> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   late AnimationController _animationController;
-  
+
   final List<Widget> _pages = [
     HomeScreen(),
     RestaurantSearchScreen(),
@@ -81,7 +83,7 @@ class _MainNavScaffoldState extends State<MainNavScaffold> with TickerProviderSt
             children: List.generate(_navItems.length, (index) {
               final isSelected = index == _selectedIndex;
               final item = _navItems[index];
-              
+
               return GestureDetector(
                 onTap: () {
                   setState(() => _selectedIndex = index);
@@ -206,18 +208,22 @@ class _AppRootState extends State<AppRoot> {
       return MainNavScaffold();
     }
     return _showLogin
-      ? LoginPage(
-          onRegisterTap: () => setState(() => _showLogin = false),
-          onGuestTap: _continueToHome,
-        )
-      : RegisterPage(
-          onLoginTap: () => setState(() => _showLogin = true),
-          onGuestTap: _continueToHome,
-        );
+        ? LoginPage(
+      onRegisterTap: () => setState(() => _showLogin = false),
+      onGuestTap: _continueToHome,
+    )
+        : RegisterPage(
+      onLoginTap: () => setState(() => _showLogin = true),
+      onGuestTap: _continueToHome,
+    );
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [

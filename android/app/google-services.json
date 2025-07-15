@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "675203230886",
-    "project_id": "whattoeat-flutter-app",
-    "storage_bucket": "whattoeat-flutter-app.firebasestorage.app"
+    "project_number": "684671807759",
+    "project_id": "whattoeat-flutter-app-4319f",
+    "storage_bucket": "whattoeat-flutter-app-4319f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:675203230886:android:14dade9240b350a4a2d867",
+        "mobilesdk_app_id": "1:684671807759:android:feeb99b4c287f3ebc4ce7a",
         "android_client_info": {
-          "package_name": "com.company.what_to_eat"
+          "package_name": "com.example.what_to_eat"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBaKpAo_EaiYlvad3SP3tP_UaONfLvt1g4"
+          "current_key": "AIzaSyBd9ksGYZd4Aum8M8RxRoOZP1CiLFK-LQQ"
         }
       ],
       "services": {
