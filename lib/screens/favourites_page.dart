@@ -24,6 +24,92 @@ class _FavouritesPageState extends State<FavouritesPage> {
     _loadFavorites();
   }
 
+  // Future<void> _loadFavorites() async {
+  //   try {
+  //     setState(() {
+  //       _isLoading = true;
+  //       _error = '';
+  //     });
+  //
+  //     // Simulate network delay
+  //     await Future.delayed(const Duration(seconds: 1));
+  //
+  //     // Dummy data instead of Firebase
+  //     List<Map<String, dynamic>> favorites = [
+  //       {
+  //         'placeId': 'dummy_1',
+  //         'name': 'The Golden Spoon',
+  //         'cuisine': 'Italian',
+  //         'rating': 4.5,
+  //         'address': '123 Main Street, Downtown',
+  //         'priceLevel': 3,
+  //         'image': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 2)),
+  //       },
+  //       {
+  //         'placeId': 'dummy_2',
+  //         'name': 'Sakura Sushi Bar',
+  //         'cuisine': 'Japanese',
+  //         'rating': 4.8,
+  //         'address': '456 Oak Avenue, Midtown',
+  //         'priceLevel': 4,
+  //         'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 5)),
+  //       },
+  //       {
+  //         'placeId': 'dummy_3',
+  //         'name': 'Burger Paradise',
+  //         'cuisine': 'American',
+  //         'rating': 4.2,
+  //         'address': '789 Pine Road, Uptown',
+  //         'priceLevel': 2,
+  //         'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 1)),
+  //       },
+  //       {
+  //         'placeId': 'dummy_4',
+  //         'name': 'Spice Garden',
+  //         'cuisine': 'Indian',
+  //         'rating': 4.6,
+  //         'address': '321 Elm Street, Old Town',
+  //         'priceLevel': 2,
+  //         'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 3)),
+  //       },
+  //       {
+  //         'placeId': 'dummy_5',
+  //         'name': 'Le Petit Café',
+  //         'cuisine': 'French',
+  //         'rating': 4.7,
+  //         'address': '654 Maple Drive, French Quarter',
+  //         'priceLevel': 3,
+  //         'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 4)),
+  //       },
+  //       {
+  //         'placeId': 'dummy_6',
+  //         'name': 'Taco Fiesta',
+  //         'cuisine': 'Mexican',
+  //         'rating': 4.3,
+  //         'address': '987 Cedar Lane, South Side',
+  //         'priceLevel': 1,
+  //         'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&w=400&q=80',
+  //         'addedAt': DateTime.now().subtract(const Duration(days: 6)),
+  //       },
+  //     ];
+  //
+  //     setState(() {
+  //       _favoriteRestaurants = favorites;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _error = 'Error loading favorites: $e';
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> _loadFavorites() async {
     try {
       setState(() {
@@ -31,72 +117,38 @@ class _FavouritesPageState extends State<FavouritesPage> {
         _error = '';
       });
 
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        setState(() {
+          _favoriteRestaurants = [];
+          _isLoading = false;
+        });
+        return;
+      }
 
-      // Dummy data instead of Firebase
-      List<Map<String, dynamic>> favorites = [
-        {
-          'placeId': 'dummy_1',
-          'name': 'The Golden Spoon',
-          'cuisine': 'Italian',
-          'rating': 4.5,
-          'address': '123 Main Street, Downtown',
-          'priceLevel': 3,
-          'image': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 2)),
-        },
-        {
-          'placeId': 'dummy_2',
-          'name': 'Sakura Sushi Bar',
-          'cuisine': 'Japanese',
-          'rating': 4.8,
-          'address': '456 Oak Avenue, Midtown',
-          'priceLevel': 4,
-          'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 5)),
-        },
-        {
-          'placeId': 'dummy_3',
-          'name': 'Burger Paradise',
-          'cuisine': 'American',
-          'rating': 4.2,
-          'address': '789 Pine Road, Uptown',
-          'priceLevel': 2,
-          'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 1)),
-        },
-        {
-          'placeId': 'dummy_4',
-          'name': 'Spice Garden',
-          'cuisine': 'Indian',
-          'rating': 4.6,
-          'address': '321 Elm Street, Old Town',
-          'priceLevel': 2,
-          'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 3)),
-        },
-        {
-          'placeId': 'dummy_5',
-          'name': 'Le Petit Café',
-          'cuisine': 'French',
-          'rating': 4.7,
-          'address': '654 Maple Drive, French Quarter',
-          'priceLevel': 3,
-          'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 4)),
-        },
-        {
-          'placeId': 'dummy_6',
-          'name': 'Taco Fiesta',
-          'cuisine': 'Mexican',
-          'rating': 4.3,
-          'address': '987 Cedar Lane, South Side',
-          'priceLevel': 1,
-          'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&w=400&q=80',
-          'addedAt': DateTime.now().subtract(const Duration(days: 6)),
-        },
-      ];
+      // Get user's favorites from Firestore
+      final favoritesSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .orderBy('addedAt', descending: true)
+          .get();
+
+      List<Map<String, dynamic>> favorites = [];
+
+      for (var doc in favoritesSnapshot.docs) {
+        final data = doc.data();
+        favorites.add({
+          'placeId': doc.id,
+          'name': data['name'] ?? 'Unknown Restaurant',
+          'cuisine': data['cuisine'] ?? 'Unknown',
+          'rating': (data['rating'] ?? 0.0).toDouble(),
+          'address': data['address'] ?? 'No address available',
+          'priceLevel': data['priceLevel'] ?? 2,
+          'image': data['image'] ?? 'https://via.placeholder.com/400x200',
+          'addedAt': (data['addedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        });
+      }
 
       setState(() {
         _favoriteRestaurants = favorites;
@@ -112,9 +164,18 @@ class _FavouritesPageState extends State<FavouritesPage> {
 
   Future<void> _removeFavorite(String placeId, String restaurantName) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
 
+      // Remove from Firebase
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('favorites')
+          .doc(placeId)
+          .delete();
+
+      // Update local state
       setState(() {
         _favoriteRestaurants.removeWhere((restaurant) => restaurant['placeId'] == placeId);
       });
@@ -254,13 +315,24 @@ class _FavouritesPageState extends State<FavouritesPage> {
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.black, width: 2),
                       ),
-                      child: Text(
-                        'FAVORITE',
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.favorite,
+                            color: Colors.black,
+                            size: 12,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'FAVORITE',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -379,7 +451,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildNeoButton(
-                        text: 'REMOVE FAVORITE',
+                        text: 'REMOVE',
                         color: const Color(0xFFFF5FCF),
                         onPressed: () {
                           _showRemoveConfirmation(restaurant);

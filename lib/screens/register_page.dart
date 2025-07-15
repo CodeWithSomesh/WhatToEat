@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:what_to_eat/auth/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback? onLoginTap;
@@ -38,6 +39,22 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  Future<void> _createUserInFirestore(String uid, String name, String email) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'name': name,
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'isActive': true,
+        // Add any other user fields you want to track
+      });
+    } catch (e) {
+      print('Error creating user in Firestore: $e');
+      throw Exception('Failed to create user profile');
+    }
+  }
+
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -46,11 +63,21 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
-      await authService.value.createAccount(
+      // Create user account in Firebase Auth
+      final userCredential = await authService.value.createAccount(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         name: _nameController.text.trim(),
       );
+
+      // Create user document in Firestore
+      if (userCredential?.user != null) {
+        await _createUserInFirestore(
+          userCredential!.user!.uid,
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+        );
+      }
 
       _showSnackBar('Account created successfully! Please login.');
 
@@ -68,6 +95,8 @@ class _RegisterPageState extends State<RegisterPage> {
         errorMessage = 'An account with this email already exists.';
       } else if (e.toString().contains('invalid-email')) {
         errorMessage = 'Please enter a valid email address.';
+      } else if (e.toString().contains('Failed to create user profile')) {
+        errorMessage = 'Account created but failed to set up profile. Please contact support.';
       }
 
       _showSnackBar(errorMessage, isError: true);

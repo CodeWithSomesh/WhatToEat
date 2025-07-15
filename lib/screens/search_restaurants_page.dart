@@ -91,91 +91,91 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 //     }
 //   }
 
-    Future<void> _loadFavorites() async {
-        try {
-            setState(() {
-            _isLoading = true;
-            _error = '';
-            });
-
-            // Simulate network delay
-            await Future.delayed(const Duration(seconds: 1));
-
-            // Dummy data instead of Firebase
-            List<Map<String, dynamic>> favorites = [
-            {
-                'placeId': 'dummy_1',
-                'name': 'The Golden Spoon',
-                'cuisine': 'Italian',
-                'rating': 4.5,
-                'address': '123 Main Street, Downtown',
-                'priceLevel': 3,
-                'image': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 2)),
-            },
-            {
-                'placeId': 'dummy_2',
-                'name': 'Sakura Sushi Bar',
-                'cuisine': 'Japanese',
-                'rating': 4.8,
-                'address': '456 Oak Avenue, Midtown',
-                'priceLevel': 4,
-                'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 5)),
-            },
-            {
-                'placeId': 'dummy_3',
-                'name': 'Burger Paradise',
-                'cuisine': 'American',
-                'rating': 4.2,
-                'address': '789 Pine Road, Uptown',
-                'priceLevel': 2,
-                'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 1)),
-            },
-            {
-                'placeId': 'dummy_4',
-                'name': 'Spice Garden',
-                'cuisine': 'Indian',
-                'rating': 4.6,
-                'address': '321 Elm Street, Old Town',
-                'priceLevel': 2,
-                'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 3)),
-            },
-            {
-                'placeId': 'dummy_5',
-                'name': 'Le Petit Café',
-                'cuisine': 'French',
-                'rating': 4.7,
-                'address': '654 Maple Drive, French Quarter',
-                'priceLevel': 3,
-                'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 4)),
-            },
-            {
-                'placeId': 'dummy_6',
-                'name': 'Taco Fiesta',
-                'cuisine': 'Mexican',
-                'rating': 4.3,
-                'address': '987 Cedar Lane, South Side',
-                'priceLevel': 1,
-                'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&w=400&q=80',
-                'addedAt': DateTime.now().subtract(const Duration(days: 6)),
-            },
-            ];
-
-            setState(() {
-            _favoriteRestaurants = favorites;
-            _isLoading = false;
-            });
-        } catch (e) {
-            setState(() {
-            _error = 'Error loading favorites: $e';
-            _isLoading = false;
-            });
-        }
-        }
+// Future<void> _loadFavorites() async {
+//     try {
+//         setState(() {
+//         _isLoading = true;
+//         _error = '';
+//         });
+//
+//         // Simulate network delay
+//         await Future.delayed(const Duration(seconds: 1));
+//
+//         // Dummy data instead of Firebase
+//         List<Map<String, dynamic>> favorites = [
+//         {
+//             'placeId': 'dummy_1',
+//             'name': 'The Golden Spoon',
+//             'cuisine': 'Italian',
+//             'rating': 4.5,
+//             'address': '123 Main Street, Downtown',
+//             'priceLevel': 3,
+//             'image': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 2)),
+//         },
+//         {
+//             'placeId': 'dummy_2',
+//             'name': 'Sakura Sushi Bar',
+//             'cuisine': 'Japanese',
+//             'rating': 4.8,
+//             'address': '456 Oak Avenue, Midtown',
+//             'priceLevel': 4,
+//             'image': 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 5)),
+//         },
+//         {
+//             'placeId': 'dummy_3',
+//             'name': 'Burger Paradise',
+//             'cuisine': 'American',
+//             'rating': 4.2,
+//             'address': '789 Pine Road, Uptown',
+//             'priceLevel': 2,
+//             'image': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 1)),
+//         },
+//         {
+//             'placeId': 'dummy_4',
+//             'name': 'Spice Garden',
+//             'cuisine': 'Indian',
+//             'rating': 4.6,
+//             'address': '321 Elm Street, Old Town',
+//             'priceLevel': 2,
+//             'image': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 3)),
+//         },
+//         {
+//             'placeId': 'dummy_5',
+//             'name': 'Le Petit Café',
+//             'cuisine': 'French',
+//             'rating': 4.7,
+//             'address': '654 Maple Drive, French Quarter',
+//             'priceLevel': 3,
+//             'image': 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 4)),
+//         },
+//         {
+//             'placeId': 'dummy_6',
+//             'name': 'Taco Fiesta',
+//             'cuisine': 'Mexican',
+//             'rating': 4.3,
+//             'address': '987 Cedar Lane, South Side',
+//             'priceLevel': 1,
+//             'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&w=400&q=80',
+//             'addedAt': DateTime.now().subtract(const Duration(days: 6)),
+//         },
+//         ];
+//
+//         setState(() {
+//         _favoriteRestaurants = favorites;
+//         _isLoading = false;
+//         });
+//     } catch (e) {
+//         setState(() {
+//         _error = 'Error loading favorites: $e';
+//         _isLoading = false;
+//         });
+//     }
+//     }
 
     // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
     //     try {
@@ -267,56 +267,176 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     //     }
     //    }
 
-    Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
-        try {
-            String placeId = restaurant['placeId'].toString();
-            
-            // Check if restaurant is already in favorites
-            bool isCurrentlyFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
-            
-            if (isCurrentlyFavorite) {
-            // Remove from favorites
-            setState(() {
-                _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
-            });
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                content: Text('Removed ${restaurant['name']} from favorites'),
-                backgroundColor: const Color(0xFFFF5FCF),
-                ),
-            );
-            } else {
-            // Add to favorites
-            setState(() {
-                _favoriteRestaurants.add({
-                'placeId': restaurant['placeId'],
-                'name': restaurant['name'],
-                'cuisine': restaurant['cuisine'] ?? 'Unknown',
-                'rating': restaurant['rating'] ?? 0.0,
-                'address': restaurant['address'] ?? 'No address available',
-                'priceLevel': restaurant['priceLevel'] ?? 2,
-                'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
-                'addedAt': DateTime.now(),
-                });
-            });
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                content: Text('Added ${restaurant['name']} to favorites'),
-                backgroundColor: const Color(0xFF39FF6A),
-                ),
-            );
-            }
-        } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Error updating favorites: $e'),
-                backgroundColor: const Color(0xFFFF5FCF),
-            ),
-            );
-        }
+    // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+    //     try {
+    //         String placeId = restaurant['placeId'].toString();
+    //
+    //         // Check if restaurant is already in favorites
+    //         bool isCurrentlyFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
+    //
+    //         if (isCurrentlyFavorite) {
+    //         // Remove from favorites
+    //         setState(() {
+    //             _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
+    //         });
+    //
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //             SnackBar(
+    //             content: Text('Removed ${restaurant['name']} from favorites'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //             ),
+    //         );
+    //         } else {
+    //         // Add to favorites
+    //         setState(() {
+    //             _favoriteRestaurants.add({
+    //             'placeId': restaurant['placeId'],
+    //             'name': restaurant['name'],
+    //             'cuisine': restaurant['cuisine'] ?? 'Unknown',
+    //             'rating': restaurant['rating'] ?? 0.0,
+    //             'address': restaurant['address'] ?? 'No address available',
+    //             'priceLevel': restaurant['priceLevel'] ?? 2,
+    //             'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
+    //             'addedAt': DateTime.now(),
+    //             });
+    //         });
+    //
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //             SnackBar(
+    //             content: Text('Added ${restaurant['name']} to favorites'),
+    //             backgroundColor: const Color(0xFF39FF6A),
+    //             ),
+    //         );
+    //         }
+    //     } catch (e) {
+    //         ScaffoldMessenger.of(context).showSnackBar(
+    //         SnackBar(
+    //             content: Text('Error updating favorites: $e'),
+    //             backgroundColor: const Color(0xFFFF5FCF),
+    //         ),
+    //         );
+    //     }
+    // }
+
+  // Load favorites from Firebase
+  Future<void> _loadFavorites() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('favorites')
+            .get();
+
+        setState(() {
+          _favoriteRestaurants = doc.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'placeId': doc.id,
+              'name': data['name'] ?? 'Unknown Restaurant',
+              'cuisine': data['cuisine'] ?? 'Unknown',
+              'rating': (data['rating'] ?? 0.0).toDouble(),
+              'address': data['address'] ?? 'No address available',
+              'priceLevel': data['priceLevel'] ?? 2,
+              'image': data['image'] ?? 'https://via.placeholder.com/400x200',
+              'addedAt': (data['addedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+            };
+          }).toList();
+        });
+      }
+    } catch (e) {
+      print('Error loading favorites: $e');
     }
+  }
+
+// Toggle favorite status in Firebase
+  Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please sign in to add favorites'),
+            backgroundColor: Color(0xFFFF5FCF),
+          ),
+        );
+        return;
+      }
+
+      final placeId = restaurant['placeId'].toString();
+      final isFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
+
+      if (isFavorite) {
+        // Remove from favorites
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('favorites')
+            .doc(placeId)
+            .delete();
+
+        setState(() {
+          _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Removed ${restaurant['name']} from favorites'),
+            backgroundColor: const Color(0xFFFF5FCF),
+          ),
+        );
+      } else {
+        // Add to favorites
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('favorites')
+            .doc(placeId)
+            .set({
+          'name': restaurant['name'],
+          'cuisine': restaurant['cuisine'] ?? 'Unknown',
+          'rating': restaurant['rating'] ?? 0.0,
+          'address': restaurant['address'] ?? 'No address available',
+          'priceLevel': restaurant['priceLevel'] ?? 2,
+          'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
+          'addedAt': FieldValue.serverTimestamp(),
+        });
+
+        setState(() {
+          _favoriteRestaurants.add({
+            'placeId': restaurant['placeId'],
+            'name': restaurant['name'],
+            'cuisine': restaurant['cuisine'] ?? 'Unknown',
+            'rating': restaurant['rating'] ?? 0.0,
+            'address': restaurant['address'] ?? 'No address available',
+            'priceLevel': restaurant['priceLevel'] ?? 2,
+            'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
+            'addedAt': DateTime.now(),
+          });
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added ${restaurant['name']} to favorites'),
+            backgroundColor: const Color(0xFF39FF6A),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error updating favorites: $e'),
+          backgroundColor: const Color(0xFFFF5FCF),
+        ),
+      );
+    }
+  }
+
+  // Helper function to check if a restaurant is favorited
+  bool _isRestaurantFavorited(String placeId) {
+    return _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
+  }
 
   Future<void> _getCurrentLocation() async {
     try {
@@ -324,7 +444,8 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled) {
           setState(() {
-            _currentLocation = 'Location services disabled';
+            _currentLocation = 'George Town, Penang, Malaysia'; // Default location
+            _locationController.text = _currentLocation;
           });
           return;
         }
@@ -334,7 +455,8 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
           permission = await Geolocator.requestPermission();
           if (permission == LocationPermission.denied) {
             setState(() {
-              _currentLocation = 'Location permission denied';
+              _currentLocation = 'George Town, Penang, Malaysia'; // Default location
+              _locationController.text = _currentLocation;
             });
             return;
           }
@@ -342,7 +464,8 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 
         if (permission == LocationPermission.deniedForever) {
           setState(() {
-            _currentLocation = 'Location permissions permanently denied';
+            _currentLocation = 'George Town, Penang, Malaysia'; // Default location
+            _locationController.text = _currentLocation;
           });
           return;
         }
@@ -354,13 +477,15 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
       );
 
       _userPosition = position;
-      
-      // Reverse geocode to get readable address
       await _reverseGeocode(position.latitude, position.longitude);
     } catch (e) {
-      setState(() {
-        _currentLocation = 'Unable to get location';
-      });
+      // Set default location if GPS fails
+      if (mounted) {
+        setState(() {
+          _currentLocation = 'George Town, Penang, Malaysia';
+          _locationController.text = _currentLocation;
+        });
+      }
     }
   }
 
@@ -427,38 +552,67 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     _saveSearchHistory(query);
 
     try {
-      String location = _locationController.text;
+      String location = _locationController.text.trim();
       String locationParam = '';
 
-      if (_userPosition != null && (location.isEmpty || location == _currentLocation)) {
+      // Priority: User entered location > Current GPS location > Default fallback
+      if (location.isNotEmpty && location != _currentLocation) {
+        // Use user-entered location
+        final geocodeResult = await _geocodeLocation(location);
+        if (geocodeResult != null) {
+          locationParam = '${geocodeResult['lat']},${geocodeResult['lng']}';
+        }
+      } else if (_userPosition != null) {
+        // Use GPS location
         locationParam = '${_userPosition!.latitude},${_userPosition!.longitude}';
       } else if (location.isNotEmpty) {
-        // Geocode the entered location
+        // Try to geocode the current location text
         final geocodeResult = await _geocodeLocation(location);
         if (geocodeResult != null) {
           locationParam = '${geocodeResult['lat']},${geocodeResult['lng']}';
         }
       }
 
+      // Fallback to a default location if all else fails
       if (locationParam.isEmpty) {
-        throw Exception('Unable to determine location for search');
+        // Using a default location (you can change this to your preferred default)
+        locationParam = '5.4164,100.3327'; // George Town, Penang coordinates
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Using default location for search'),
+              backgroundColor: Color(0xFFFFFF4D),
+            ),
+          );
+        }
       }
 
-      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps'; //API Key from Google Cloud
-      final radius = (_selectedRadius * 1000).round(); // Convert km to meters
-      
+      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps';
+      final radius = (_selectedRadius * 1000).round();
+
       String url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
           '?location=$locationParam'
           '&radius=$radius'
           '&type=restaurant'
-          '&keyword=$query'
+          '&keyword=${Uri.encodeComponent(query)}'
           '&key=$apiKey';
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception('Request timeout - please try again');
+        },
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final results = data['results'] as List;
+
+        // Check for API errors
+        if (data['status'] != 'OK' && data['status'] != 'ZERO_RESULTS') {
+          throw Exception('API Error: ${data['status']} - ${data['error_message'] ?? 'Unknown error'}');
+        }
+
+        final results = data['results'] as List? ?? [];
 
         List<Map<String, dynamic>> filteredResults = results.map((restaurant) {
           final photos = restaurant['photos'] as List?;
@@ -475,40 +629,49 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
             'rating': (restaurant['rating'] ?? 4.0).toDouble(),
             'address': restaurant['vicinity'] ?? 'Address not available',
             'priceLevel': restaurant['price_level'] ?? 2,
-            'placeId': restaurant['place_id'],
+            'placeId': restaurant['place_id'] ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
             'types': restaurant['types'] ?? [],
-            'isOpen': restaurant['opening_hours']?['open_now'] ?? null,
+            'isOpen': restaurant['opening_hours']?['open_now'],
           };
         }).toList();
 
-        // Apply filters
         filteredResults = _applyFilters(filteredResults);
 
-        setState(() {
-          _searchResults = filteredResults;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _searchResults = filteredResults;
+            _isLoading = false;
+          });
+        }
       } else {
-        throw Exception('Failed to search restaurants');
+        throw Exception('HTTP ${response.statusCode}: Failed to search restaurants');
       }
     } catch (e) {
-      setState(() {
-        _error = 'Search failed: ${e.toString()}';
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString().replaceAll('Exception: ', '');
+          _isLoading = false;
+          _searchResults = []; // Clear results on error
+        });
+      }
     }
   }
 
   Future<Map<String, double>?> _geocodeLocation(String location) async {
+    if (location.isEmpty) return null;
+
     try {
-      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps'; //API Key from Google Cloud
+      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps';
       final url = 'https://maps.googleapis.com/maps/api/geocode/json'
           '?address=${Uri.encodeComponent(location)}&key=$apiKey';
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(
+        const Duration(seconds: 8),
+      );
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['results'].isNotEmpty) {
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
           final geometry = data['results'][0]['geometry']['location'];
           return {
             'lat': geometry['lat'].toDouble(),
@@ -836,21 +999,21 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                             onPressed: () {
                             _showRestaurantDetails(restaurant);
                             },
-                        ),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                        child: _buildNeoButton(
-                            text: _favoriteRestaurants.contains(restaurant['placeId']) 
-                                ? 'REMOVE FAVORITE' 
+                          child: _buildNeoButton(
+                            text: _isRestaurantFavorited(restaurant['placeId'])
+                                ? 'REMOVE FAVORITE'
                                 : 'ADD FAVORITE',
-                            color: _favoriteRestaurants.contains(restaurant['placeId'])
+                            color: _isRestaurantFavorited(restaurant['placeId'])
                                 ? const Color(0xFFFF5FCF)
                                 : const Color(0xFF39FF6A),
                             onPressed: () {
-                            _toggleFavorite(restaurant);
+                              _toggleFavorite(restaurant);
                             },
-                        ),
+                          ),
                         ),
                     ],
                 ),
@@ -957,24 +1120,24 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 SizedBox(
-                    width: double.infinity,
-                    child: _buildNeoButton(
-                        text: _favoriteRestaurants.contains(restaurant['placeId']) 
-                            ? 'REMOVE FROM FAVORITES' 
-                            : 'ADD TO FAVORITES',
-                        color: _favoriteRestaurants.contains(restaurant['placeId'])
-                            ? const Color(0xFFFF5FCF)
-                            : const Color(0xFF39FF6A),
-                        onPressed: () {
-                        Navigator.of(context).pop();
-                        _toggleFavorite(restaurant);
-                        },
-                        icon: _favoriteRestaurants.contains(restaurant['placeId'])
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                    ),
+                  width: double.infinity,
+                  child: _buildNeoButton(
+                    text: _isRestaurantFavorited(restaurant['placeId'])
+                        ? 'REMOVE FROM FAVORITES'
+                        : 'ADD TO FAVORITES',
+                    color: _isRestaurantFavorited(restaurant['placeId'])
+                        ? const Color(0xFFFF5FCF)
+                        : const Color(0xFF39FF6A),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _toggleFavorite(restaurant);
+                    },
+                    icon: _isRestaurantFavorited(restaurant['placeId'])
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
                 ),
               ],
             ),
@@ -1399,23 +1562,21 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 }
 
 // 2. Complete the _buildResultsSection() method
-Widget _buildResultsSection() {
-  if (_isLoading) {
-    return SizedBox(
-      height: 200,
-      child: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-          strokeWidth: 3,
-        ),
-      ),
-    );
-  }
-
-  if (_error.isNotEmpty) {
-    return Center(
-      child: Container(
+  Widget _buildResultsSection() {
+    if (_isLoading) {
+      return Container(
         height: 200,
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+            strokeWidth: 3,
+          ),
+        ),
+      );
+    }
+
+    if (_error.isNotEmpty) {
+      return Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -1461,6 +1622,9 @@ Widget _buildResultsSection() {
               text: 'TRY AGAIN',
               color: const Color(0xFF39FF6A),
               onPressed: () {
+                setState(() {
+                  _error = '';
+                });
                 if (_searchController.text.isNotEmpty) {
                   _performSearch(_searchController.text);
                 }
@@ -1468,17 +1632,15 @@ Widget _buildResultsSection() {
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
 
-  if (!_hasSearched) {
-    return _buildSearchSuggestions();
-  }
+    if (!_hasSearched) {
+      return _buildSearchSuggestions();
+    }
 
-  if (_searchResults.isEmpty) {
-    return Center(
-      child: Container(
+    if (_searchResults.isEmpty) {
+      return Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -1519,20 +1681,35 @@ Widget _buildResultsSection() {
               ),
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 16),
+            _buildNeoButton(
+              text: 'CLEAR SEARCH',
+              color: const Color(0xFF3DDCFF),
+              onPressed: () {
+                setState(() {
+                  _searchController.clear();
+                  _searchResults.clear();
+                  _hasSearched = false;
+                  _error = '';
+                });
+              },
+            ),
           ],
         ),
+      );
+    }
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _searchResults.length,
+        itemBuilder: (context, index) {
+          return _buildRestaurantCard(_searchResults[index]);
+        },
       ),
     );
   }
-
-  return ListView.builder(
-    padding: const EdgeInsets.all(16),
-    itemCount: _searchResults.length,
-    itemBuilder: (context, index) {
-      return _buildRestaurantCard(_searchResults[index]);
-    },
-  );
-}
 
 // 3. Add the search suggestions widget
 Widget _buildSearchSuggestions() {

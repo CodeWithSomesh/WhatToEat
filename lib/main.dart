@@ -173,9 +173,9 @@ class _AppRootState extends State<AppRoot> {
   }
 
   Future<void> _loadOnboardingStatus() async {
-    final prefs = await SharedPreferences.getInstance();
+    // Always show onboarding first, regardless of previous state
     setState(() {
-      _onboardingComplete = prefs.getBool('onboardingComplete') ?? false;
+      _onboardingComplete = false;
       _loading = false;
     });
   }
@@ -185,6 +185,7 @@ class _AppRootState extends State<AppRoot> {
     await prefs.setBool('onboardingComplete', true);
     setState(() {
       _onboardingComplete = true;
+      _showMainApp = false; // Ensure we show login page after onboarding
     });
   }
 
@@ -211,6 +212,7 @@ class _AppRootState extends State<AppRoot> {
         ? LoginPage(
       onRegisterTap: () => setState(() => _showLogin = false),
       onGuestTap: _continueToHome,
+      onLoginSuccess: _continueToHome,
     )
         : RegisterPage(
       onLoginTap: () => setState(() => _showLogin = true),

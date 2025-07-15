@@ -107,8 +107,8 @@ class _RestaurantFinderScreenState extends State<RestaurantFinderScreen>
         timeLimit: const Duration(seconds: 10),
       );
 
-      // Use Google Places API (you'll need to add your API key)
-      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps'; // Replace with your actual API key
+      // Use Google Places API
+      final apiKey = 'AIzaSyDK1_xIKbNdprvMSiz22k5wiXL2C301bps';
       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
           '?location=${position.latitude},${position.longitude}'
           '&radius=5000'
