@@ -357,7 +357,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please sign in to add favorites'),
+            content: Text(
+              'Please sign in to add favorites',
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
             backgroundColor: Color(0xFFFF5FCF),
           ),
         );
@@ -382,7 +385,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Removed ${restaurant['name']} from favorites'),
+            content: Text(
+              'Removed ${restaurant['name']} from favorites',
+              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
             backgroundColor: const Color(0xFFFF5FCF),
           ),
         );
@@ -418,7 +424,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Added ${restaurant['name']} to favorites'),
+            content: Text(
+              'Added ${restaurant['name']} to favorites',
+              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
             backgroundColor: const Color(0xFF39FF6A),
           ),
         );
@@ -426,7 +435,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error updating favorites: $e'),
+          content: Text(
+            'Error updating favorites: $e',
+            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: const Color(0xFFFF5FCF),
         ),
       );
@@ -580,7 +592,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Using default location for search'),
+              content: Text(
+                'Using default location for search',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
               backgroundColor: Color(0xFFFFFF4D),
             ),
           );
@@ -685,6 +700,37 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     return null;
   }
 
+  bool _matchesCuisineType(String filter, List<String> types, String cuisine) {
+    // Map common cuisine filters to Google Places types
+    final cuisineMapping = {
+      'italian': ['italian', 'pizza'],
+      'chinese': ['chinese', 'asian'],
+      'japanese': ['japanese', 'sushi', 'asian'],
+      'indian': ['indian', 'asian'],
+      'mexican': ['mexican', 'latin'],
+      'thai': ['thai', 'asian'],
+      'american': ['american', 'burger', 'fast_food'],
+      'french': ['french', 'european'],
+      'greek': ['greek', 'mediterranean'],
+      'korean': ['korean', 'asian'],
+      'vietnamese': ['vietnamese', 'asian'],
+      'turkish': ['turkish', 'mediterranean'],
+      'lebanese': ['lebanese', 'middle_eastern', 'mediterranean'],
+      'spanish': ['spanish', 'european'],
+    };
+
+    final mappedTypes = cuisineMapping[filter] ?? [filter];
+
+    for (String mappedType in mappedTypes) {
+      if (types.any((type) => type.contains(mappedType)) ||
+          cuisine.contains(mappedType)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   List<Map<String, dynamic>> _applyFilters(List<Map<String, dynamic>> results) {
     return results.where((restaurant) {
       // Price filter
@@ -703,12 +749,27 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 
         bool matchesCuisine = false;
         for (String filter in _cuisineFilters) {
-          if (restaurantCuisine.contains(filter.toLowerCase()) ||
-              restaurantTypes.any((type) => type.contains(filter.toLowerCase()))) {
+          final filterLower = filter.toLowerCase();
+
+          // Check if the filter matches the extracted cuisine
+          if (restaurantCuisine.contains(filterLower)) {
+            matchesCuisine = true;
+            break;
+          }
+
+          // Check if the filter matches any of the Google Places types
+          if (restaurantTypes.any((type) => type.contains(filterLower))) {
+            matchesCuisine = true;
+            break;
+          }
+
+          // Additional cuisine matching for common terms
+          if (_matchesCuisineType(filterLower, restaurantTypes, restaurantCuisine)) {
             matchesCuisine = true;
             break;
           }
         }
+
         if (!matchesCuisine) return false;
       }
 
@@ -1443,9 +1504,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                           setState(() {
                             _selectedPriceRange = price;
                           });
-                          if (_searchController.text.isNotEmpty) {
-                            _performSearch(_searchController.text);
-                          }
+                          // Remove the condition and always perform search
+                          _performSearch(_searchController.text.isEmpty ? 'restaurant' : _searchController.text);
+                          // if (_searchController.text.isNotEmpty) {
+                          //   _performSearch(_searchController.text);
+                          // }
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1497,9 +1560,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                         });
                       },
                       onChangeEnd: (value) {
-                        if (_searchController.text.isNotEmpty) {
-                          _performSearch(_searchController.text);
-                        }
+                        // if (_searchController.text.isNotEmpty) {
+                        //   _performSearch(_searchController.text);
+                        // }
+                        // Remove the condition and always perform search
+                        _performSearch(_searchController.text.isEmpty ? 'restaurant' : _searchController.text);
                       },
                     ),
                   ),
@@ -1529,9 +1594,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                               _cuisineFilters.add(cuisine);
                             }
                           });
-                          if (_searchController.text.isNotEmpty) {
-                            _performSearch(_searchController.text);
-                          }
+                          // Remove the condition and always perform search
+                          _performSearch(_searchController.text.isEmpty ? 'restaurant' : _searchController.text);
+                          // if (_searchController.text.isNotEmpty) {
+                          //   _performSearch(_searchController.text);
+                          // }
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -1699,10 +1766,16 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
       );
     }
 
+    // Calculate available height dynamically
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = 80.0; // Your app bar height
+    final searchSectionHeight = _showFilters ? 400.0 : 200.0; // Approximate heights
+    final availableHeight = screenHeight - appBarHeight - searchSectionHeight - 60; // 60 for padding
+
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: availableHeight > 300 ? availableHeight : 300, // Minimum height of 300
       child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Increased bottom padding
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
         itemCount: _searchResults.length,
         itemBuilder: (context, index) {
           return _buildRestaurantCard(_searchResults[index]);

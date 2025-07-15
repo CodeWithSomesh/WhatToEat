@@ -182,14 +182,20 @@ class _FavouritesPageState extends State<FavouritesPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Removed $restaurantName from favorites'),
+          content: Text(
+            'Removed $restaurantName from favorites',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: const Color(0xFFFF5FCF),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error removing from favorites: $e'),
+          content: Text(
+            'Error removing from favorites: $e',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: const Color(0xFFFF5FCF),
         ),
       );
@@ -286,7 +292,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
               ),
             ),
           ),
-
+          
           // Restaurant details
           Padding(
             padding: const EdgeInsets.all(16),
@@ -338,7 +344,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 8),
-
+                
                 Row(
                   children: [
                     Container(
@@ -414,7 +420,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-
+                
                 Row(
                   children: [
                     const Icon(
@@ -435,7 +441,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
+                
                 // Action buttons
                 Row(
                   children: [
@@ -524,7 +530,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
+                
                 Text(
                   'Cuisine: ${restaurant['cuisine']}',
                   style: GoogleFonts.inter(
@@ -534,7 +540,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-
+                
                 Text(
                   'Rating: ${restaurant['rating']} ⭐',
                   style: GoogleFonts.inter(
@@ -544,7 +550,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-
+                
                 Text(
                   'Price: ${_priceOptions[restaurant['priceLevel'] ?? 2]}',
                   style: GoogleFonts.inter(
@@ -554,7 +560,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-
+                
                 Text(
                   'Address: ${restaurant['address']}',
                   style: GoogleFonts.inter(
@@ -564,7 +570,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
+                
                 SizedBox(
                   width: double.infinity,
                   child: _buildNeoButton(

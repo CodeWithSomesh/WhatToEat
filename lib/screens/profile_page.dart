@@ -13,7 +13,10 @@ class ProfilePage extends StatelessWidget {
       await authService.value.signOut();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Logged out successfully'),
+          content: Text(
+            'Logged out successfully',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: const Color(0xFF3DDCFF),
           duration: const Duration(seconds: 2),
         ),
@@ -32,7 +35,10 @@ class ProfilePage extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Logout failed: ${e.toString()}'),
+          content: Text(
+            'Logout failed: ${e.toString()}',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
           backgroundColor: const Color(0xFFFF5FCF),
           duration: const Duration(seconds: 3),
         ),

@@ -30,7 +30,10 @@ class _LoginPageState extends State<LoginPage> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(
+            message,
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold), // Bold and black
+          ),
           backgroundColor: isError ? const Color(0xFFFF5FCF) : const Color(0xFF3DDCFF),
           duration: const Duration(seconds: 3),
         ),

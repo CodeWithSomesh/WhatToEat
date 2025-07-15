@@ -31,7 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(
+            message,
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold), // Bold and black
+          ),
           backgroundColor: isError ? Colors.red : Colors.green,
           duration: const Duration(seconds: 3),
         ),
