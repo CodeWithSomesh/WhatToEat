@@ -286,7 +286,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
               ),
             ),
           ),
-          
+
           // Restaurant details
           Padding(
             padding: const EdgeInsets.all(16),
@@ -338,7 +338,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 Row(
                   children: [
                     Container(
@@ -414,7 +414,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 Row(
                   children: [
                     const Icon(
@@ -435,7 +435,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Action buttons
                 Row(
                   children: [
@@ -524,7 +524,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 Text(
                   'Cuisine: ${restaurant['cuisine']}',
                   style: GoogleFonts.inter(
@@ -534,7 +534,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Rating: ${restaurant['rating']} ⭐',
                   style: GoogleFonts.inter(
@@ -544,7 +544,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Price: ${_priceOptions[restaurant['priceLevel'] ?? 2]}',
                   style: GoogleFonts.inter(
@@ -554,7 +554,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Address: ${restaurant['address']}',
                   style: GoogleFonts.inter(
@@ -564,11 +564,11 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 SizedBox(
                   width: double.infinity,
                   child: _buildNeoButton(
-                    text: 'REMOVE FROM FAVORITES',
+                    text: 'REMOVE FAVORITE',
                     color: const Color(0xFFFF5FCF),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -836,7 +836,7 @@ class _FavouritesPageState extends State<FavouritesPage> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Increased bottom padding
       itemCount: _favoriteRestaurants.length,
       itemBuilder: (context, index) {
         return _buildRestaurantCard(_favoriteRestaurants[index]);

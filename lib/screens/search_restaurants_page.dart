@@ -21,7 +21,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
   final TextEditingController _locationController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   final FocusNode _locationFocusNode = FocusNode();
-  
+
   List<Map<String, dynamic>> _searchResults = [];
   List<String> _searchHistory = [];
   List<String> _cuisineFilters = [];
@@ -33,7 +33,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
   String _error = '';
   String _currentLocation = '';
   Position? _userPosition;
-  
+
   Timer? _debounceTimer;
   late AnimationController _filterAnimationController;
   late Animation<double> _filterAnimation;
@@ -81,7 +81,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 //             .doc(user.uid)
 //             .collection('favorites')
 //             .get();
-        
+
 //         setState(() {
 //             _favoriteRestaurants = doc.docs.map((doc) => doc.id).toList();
 //         });
@@ -177,146 +177,146 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 //     }
 //     }
 
-    // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
-    //     try {
-    //         final user = FirebaseAuth.instance.currentUser;
-    //         if (user == null) return;
-            
-    //         final placeId = restaurant['placeId'];
-    //         final isFavorite = _favoriteRestaurants.contains(placeId);
-            
-    //         if (isFavorite) {
-    //         // Remove from favorites
-    //         await FirebaseFirestore.instance
-    //             .collection('users')
-    //             .doc(user.uid)
-    //             .collection('favorites')
-    //             .doc(placeId)
-    //             .delete();
-                
-    //         setState(() {
-    //             _favoriteRestaurants.remove(placeId);
-    //         });
-            
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //             SnackBar(
-    //             content: Text('Removed ${restaurant['name']} from favorites'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //             ),
-    //         );
-    //         } else {
-    //         // Add to favorites
-    //         await FirebaseFirestore.instance
-    //             .collection('users')
-    //             .doc(user.uid)
-    //             .collection('favorites')
-    //             .doc(placeId)
-    //             .set({
-    //                 'name': restaurant['name'],
-    //                 'cuisine': restaurant['cuisine'],
-    //                 'rating': restaurant['rating'],
-    //                 'address': restaurant['address'],
-    //                 'priceLevel': restaurant['priceLevel'],
-    //                 'image': restaurant['image'],
-    //                 'addedAt': FieldValue.serverTimestamp(),
-    //             });
-                
-    //         setState(() {
-    //             _favoriteRestaurants.add(placeId);
-    //         });
-            
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //             SnackBar(
-    //             content: Text('Added ${restaurant['name']} to favorites'),
-    //             backgroundColor: const Color(0xFF39FF6A),
-    //             ),
-    //         );
-    //         }
-    //     } catch (e) {
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //             content: Text('Error updating favorites: $e'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //         ),
-    //         );
-    //     }
-    // }
+  // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+  //     try {
+  //         final user = FirebaseAuth.instance.currentUser;
+  //         if (user == null) return;
 
-    // Future<void> _toggleFavorite(String placeId, String restaurantName) async {
-    //     try {
-    //         // Simulate network delay
-    //         await Future.delayed(const Duration(milliseconds: 500));
+  //         final placeId = restaurant['placeId'];
+  //         final isFavorite = _favoriteRestaurants.contains(placeId);
 
-    //         setState(() {
-    //         _favoriteRestaurants.removeWhere((restaurant) => restaurant['placeId'] == placeId);
-    //         });
+  //         if (isFavorite) {
+  //         // Remove from favorites
+  //         await FirebaseFirestore.instance
+  //             .collection('users')
+  //             .doc(user.uid)
+  //             .collection('favorites')
+  //             .doc(placeId)
+  //             .delete();
 
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //             content: Text('Removed $restaurantName from favorites'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //         ),
-    //         );
-    //     } catch (e) {
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //             content: Text('Error removing from favorites: $e'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //         ),
-    //         );
-    //     }
-    //    }
+  //         setState(() {
+  //             _favoriteRestaurants.remove(placeId);
+  //         });
 
-    // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
-    //     try {
-    //         String placeId = restaurant['placeId'].toString();
-    //
-    //         // Check if restaurant is already in favorites
-    //         bool isCurrentlyFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
-    //
-    //         if (isCurrentlyFavorite) {
-    //         // Remove from favorites
-    //         setState(() {
-    //             _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
-    //         });
-    //
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //             SnackBar(
-    //             content: Text('Removed ${restaurant['name']} from favorites'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //             ),
-    //         );
-    //         } else {
-    //         // Add to favorites
-    //         setState(() {
-    //             _favoriteRestaurants.add({
-    //             'placeId': restaurant['placeId'],
-    //             'name': restaurant['name'],
-    //             'cuisine': restaurant['cuisine'] ?? 'Unknown',
-    //             'rating': restaurant['rating'] ?? 0.0,
-    //             'address': restaurant['address'] ?? 'No address available',
-    //             'priceLevel': restaurant['priceLevel'] ?? 2,
-    //             'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
-    //             'addedAt': DateTime.now(),
-    //             });
-    //         });
-    //
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //             SnackBar(
-    //             content: Text('Added ${restaurant['name']} to favorites'),
-    //             backgroundColor: const Color(0xFF39FF6A),
-    //             ),
-    //         );
-    //         }
-    //     } catch (e) {
-    //         ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //             content: Text('Error updating favorites: $e'),
-    //             backgroundColor: const Color(0xFFFF5FCF),
-    //         ),
-    //         );
-    //     }
-    // }
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //             content: Text('Removed ${restaurant['name']} from favorites'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //             ),
+  //         );
+  //         } else {
+  //         // Add to favorites
+  //         await FirebaseFirestore.instance
+  //             .collection('users')
+  //             .doc(user.uid)
+  //             .collection('favorites')
+  //             .doc(placeId)
+  //             .set({
+  //                 'name': restaurant['name'],
+  //                 'cuisine': restaurant['cuisine'],
+  //                 'rating': restaurant['rating'],
+  //                 'address': restaurant['address'],
+  //                 'priceLevel': restaurant['priceLevel'],
+  //                 'image': restaurant['image'],
+  //                 'addedAt': FieldValue.serverTimestamp(),
+  //             });
+
+  //         setState(() {
+  //             _favoriteRestaurants.add(placeId);
+  //         });
+
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //             content: Text('Added ${restaurant['name']} to favorites'),
+  //             backgroundColor: const Color(0xFF39FF6A),
+  //             ),
+  //         );
+  //         }
+  //     } catch (e) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text('Error updating favorites: $e'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //         ),
+  //         );
+  //     }
+  // }
+
+  // Future<void> _toggleFavorite(String placeId, String restaurantName) async {
+  //     try {
+  //         // Simulate network delay
+  //         await Future.delayed(const Duration(milliseconds: 500));
+
+  //         setState(() {
+  //         _favoriteRestaurants.removeWhere((restaurant) => restaurant['placeId'] == placeId);
+  //         });
+
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text('Removed $restaurantName from favorites'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //         ),
+  //         );
+  //     } catch (e) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text('Error removing from favorites: $e'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //         ),
+  //         );
+  //     }
+  //    }
+
+  // Future<void> _toggleFavorite(Map<String, dynamic> restaurant) async {
+  //     try {
+  //         String placeId = restaurant['placeId'].toString();
+  //
+  //         // Check if restaurant is already in favorites
+  //         bool isCurrentlyFavorite = _favoriteRestaurants.any((fav) => fav['placeId'].toString() == placeId);
+  //
+  //         if (isCurrentlyFavorite) {
+  //         // Remove from favorites
+  //         setState(() {
+  //             _favoriteRestaurants.removeWhere((fav) => fav['placeId'].toString() == placeId);
+  //         });
+  //
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //             content: Text('Removed ${restaurant['name']} from favorites'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //             ),
+  //         );
+  //         } else {
+  //         // Add to favorites
+  //         setState(() {
+  //             _favoriteRestaurants.add({
+  //             'placeId': restaurant['placeId'],
+  //             'name': restaurant['name'],
+  //             'cuisine': restaurant['cuisine'] ?? 'Unknown',
+  //             'rating': restaurant['rating'] ?? 0.0,
+  //             'address': restaurant['address'] ?? 'No address available',
+  //             'priceLevel': restaurant['priceLevel'] ?? 2,
+  //             'image': restaurant['image'] ?? 'https://via.placeholder.com/400x200',
+  //             'addedAt': DateTime.now(),
+  //             });
+  //         });
+  //
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //             SnackBar(
+  //             content: Text('Added ${restaurant['name']} to favorites'),
+  //             backgroundColor: const Color(0xFF39FF6A),
+  //             ),
+  //         );
+  //         }
+  //     } catch (e) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //             content: Text('Error updating favorites: $e'),
+  //             backgroundColor: const Color(0xFFFF5FCF),
+  //         ),
+  //         );
+  //     }
+  // }
 
   // Load favorites from Firebase
   Future<void> _loadFavorites() async {
@@ -700,7 +700,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
       if (_cuisineFilters.isNotEmpty) {
         final restaurantCuisine = restaurant['cuisine'].toLowerCase();
         final restaurantTypes = (restaurant['types'] as List).map((t) => t.toString().toLowerCase()).toList();
-        
+
         bool matchesCuisine = false;
         for (String filter in _cuisineFilters) {
           if (restaurantCuisine.contains(filter.toLowerCase()) ||
@@ -785,12 +785,17 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
               Icon(icon, color: Colors.black, size: 20),
               const SizedBox(width: 8),
             ],
-            Text(
-              text,
-              style: GoogleFonts.fredoka(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                text,
+                style: GoogleFonts.fredoka(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -846,7 +851,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
               ),
             ),
           ),
-          
+
           // Restaurant details
           Padding(
             padding: const EdgeInsets.all(16),
@@ -872,8 +877,8 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: restaurant['isOpen'] 
-                              ? const Color(0xFF39FF6A) 
+                          color: restaurant['isOpen']
+                              ? const Color(0xFF39FF6A)
                               : const Color(0xFFFF5FCF),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.black, width: 2),
@@ -891,7 +896,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 Row(
                   children: [
                     Container(
@@ -967,7 +972,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 Row(
                   children: [
                     const Icon(
@@ -988,34 +993,33 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Action buttons
                 Row(
-                    children: [
-                        Expanded(
-                        child: _buildNeoButton(
-                            text: 'VIEW DETAILS',
-                            color: const Color(0xFF3DDCFF),
-                            onPressed: () {
-                            _showRestaurantDetails(restaurant);
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildNeoButton(
-                            text: _isRestaurantFavorited(restaurant['placeId'])
-                                ? 'REMOVE FAVORITE'
-                                : 'ADD FAVORITE',
-                            color: _isRestaurantFavorited(restaurant['placeId'])
-                                ? const Color(0xFFFF5FCF)
-                                : const Color(0xFF39FF6A),
-                            onPressed: () {
-                              _toggleFavorite(restaurant);
-                            },
-                          ),
-                        ),
-                    ],
+                  children: [
+                    Flexible(
+                      child: _buildNeoButton(
+                        text: 'VIEW DETAILS',
+                        color: const Color(0xFF3DDCFF),
+                        onPressed: () {
+                          _showRestaurantDetails(restaurant);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: _buildNeoButton(
+                        text: _isRestaurantFavorited(restaurant['placeId']) ? 'REMOVE' : 'ADD',
+                        color: _isRestaurantFavorited(restaurant['placeId'])
+                            ? const Color(0xFFFF5FCF)
+                            : const Color(0xFF39FF6A),
+                        onPressed: () {
+                          _toggleFavorite(restaurant);
+                        },
+                        icon: _isRestaurantFavorited(restaurant['placeId']) ? Icons.favorite : Icons.favorite_border,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1080,7 +1084,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 Text(
                   'Cuisine: ${restaurant['cuisine']}',
                   style: GoogleFonts.inter(
@@ -1090,7 +1094,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Rating: ${restaurant['rating']} ⭐',
                   style: GoogleFonts.inter(
@@ -1100,7 +1104,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Price: ${_priceOptions[restaurant['priceLevel'] ?? 2]}',
                   style: GoogleFonts.inter(
@@ -1110,7 +1114,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Address: ${restaurant['address']}',
                   style: GoogleFonts.inter(
@@ -1124,9 +1128,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                 SizedBox(
                   width: double.infinity,
                   child: _buildNeoButton(
-                    text: _isRestaurantFavorited(restaurant['placeId'])
-                        ? 'REMOVE FROM FAVORITES'
-                        : 'ADD TO FAVORITES',
+                    text: _isRestaurantFavorited(restaurant['placeId']) ? 'REMOVE FAVORITE' : 'ADD TO FAVORITE',
                     color: _isRestaurantFavorited(restaurant['placeId'])
                         ? const Color(0xFFFF5FCF)
                         : const Color(0xFF39FF6A),
@@ -1134,9 +1136,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                       Navigator.of(context).pop();
                       _toggleFavorite(restaurant);
                     },
-                    icon: _isRestaurantFavorited(restaurant['placeId'])
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+                    icon: _isRestaurantFavorited(restaurant['placeId']) ? Icons.favorite : Icons.favorite_border,
                   ),
                 ),
               ],
@@ -1159,21 +1159,21 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
 //   }
 
   @override
-    Widget build(BuildContext context) {
-        return Scaffold(
-            backgroundColor: const Color(0xFFFFFF4D),
-            appBar: _buildAppBar(),
-            body: SingleChildScrollView(
-            child: Column(
-                children: [
-                _buildSearchSection(),
-                if (_showFilters) _buildFiltersSection(),
-                _buildResultsSection(),
-                ],
-            ),
-            ),
-        );
-    }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFF4D),
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildSearchSection(),
+            if (_showFilters) _buildFiltersSection(),
+            _buildResultsSection(),
+          ],
+        ),
+      ),
+    );
+  }
 
   PreferredSize _buildAppBar() {
     return PreferredSize(
@@ -1271,15 +1271,15 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
                 prefixIcon: const Icon(Icons.search, color: Colors.black, size: 24),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.black),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _searchResults.clear();
-                            _hasSearched = false;
-                          });
-                        },
-                      )
+                  icon: const Icon(Icons.clear, color: Colors.black),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchResults.clear();
+                      _hasSearched = false;
+                    });
+                  },
+                )
                     : null,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -1364,202 +1364,202 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
   }
 
   Widget _buildFiltersSection() {
-  return AnimatedBuilder(
-    animation: _filterAnimation,
-    builder: (context, child) {
-      return SizeTransition(
-        sizeFactor: _filterAnimation,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+    return AnimatedBuilder(
+      animation: _filterAnimation,
+      builder: (context, child) {
+        return SizeTransition(
+          sizeFactor: _filterAnimation,
           child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  offset: const Offset(6, 6),
-                  blurRadius: 0,
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'FILTERS',
-                        style: GoogleFonts.fredoka(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: _clearFilters,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF5FCF),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    offset: const Offset(6, 6),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
                         child: Text(
-                          'CLEAR',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
+                          'FILTERS',
+                          style: GoogleFonts.fredoka(
+                            fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                
-                // Price Range Filter
-                Text(
-                  'Price Range',
-                  style: GoogleFonts.fredoka(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _priceOptions.map((price) {
-                    final isSelected = _selectedPriceRange == price;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedPriceRange = price;
-                        });
-                        if (_searchController.text.isNotEmpty) {
-                          _performSearch(_searchController.text);
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF39FF6A) : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: Text(
-                          price,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                      GestureDetector(
+                        onTap: _clearFilters,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF5FCF),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Text(
+                            'CLEAR',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 16),
-                
-                // Search Radius
-                Text(
-                  'Search Radius: ${_selectedRadius.toStringAsFixed(1)} km',
-                  style: GoogleFonts.fredoka(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    ],
                   ),
-                ),
-                const SizedBox(height: 8),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: const Color(0xFF3DDCFF),
-                    inactiveTrackColor: Colors.grey[300],
-                    thumbColor: const Color(0xFFFF5FCF),
-                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-                    overlayColor: const Color(0xFFFF5FCF).withOpacity(0.2),
+                  const SizedBox(height: 16),
+
+                  // Price Range Filter
+                  Text(
+                    'Price Range',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
                   ),
-                  child: Slider(
-                    value: _selectedRadius,
-                    min: 1.0,
-                    max: 20.0,
-                    divisions: 19,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedRadius = value;
-                      });
-                    },
-                    onChangeEnd: (value) {
-                      if (_searchController.text.isNotEmpty) {
-                        _performSearch(_searchController.text);
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Cuisine Filter
-                Text(
-                  'Cuisine Types',
-                  style: GoogleFonts.fredoka(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _cuisineOptions.map((cuisine) {
-                    final isSelected = _cuisineFilters.contains(cuisine);
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _cuisineFilters.remove(cuisine);
-                          } else {
-                            _cuisineFilters.add(cuisine);
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _priceOptions.map((price) {
+                      final isSelected = _selectedPriceRange == price;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedPriceRange = price;
+                          });
+                          if (_searchController.text.isNotEmpty) {
+                            _performSearch(_searchController.text);
                           }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected ? const Color(0xFF39FF6A) : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Text(
+                            price,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Search Radius
+                  Text(
+                    'Search Radius: ${_selectedRadius.toStringAsFixed(1)} km',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: const Color(0xFF3DDCFF),
+                      inactiveTrackColor: Colors.grey[300],
+                      thumbColor: const Color(0xFFFF5FCF),
+                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+                      overlayColor: const Color(0xFFFF5FCF).withOpacity(0.2),
+                    ),
+                    child: Slider(
+                      value: _selectedRadius,
+                      min: 1.0,
+                      max: 20.0,
+                      divisions: 19,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedRadius = value;
                         });
+                      },
+                      onChangeEnd: (value) {
                         if (_searchController.text.isNotEmpty) {
                           _performSearch(_searchController.text);
                         }
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF3DDCFF) : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: Text(
-                          cuisine,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Cuisine Filter
+                  Text(
+                    'Cuisine Types',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _cuisineOptions.map((cuisine) {
+                      final isSelected = _cuisineFilters.contains(cuisine);
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              _cuisineFilters.remove(cuisine);
+                            } else {
+                              _cuisineFilters.add(cuisine);
+                            }
+                          });
+                          if (_searchController.text.isNotEmpty) {
+                            _performSearch(_searchController.text);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected ? const Color(0xFF3DDCFF) : Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Text(
+                            cuisine,
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
 // 2. Complete the _buildResultsSection() method
   Widget _buildResultsSection() {
@@ -1702,7 +1702,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Increased bottom padding
         itemCount: _searchResults.length,
         itemBuilder: (context, index) {
           return _buildRestaurantCard(_searchResults[index]);
@@ -1712,25 +1712,65 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen>
   }
 
 // 3. Add the search suggestions widget
-Widget _buildSearchSuggestions() {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'SEARCH SUGGESTIONS',
-          style: GoogleFonts.fredoka(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 16),
-        
-        if (_searchHistory.isNotEmpty) ...[
+  Widget _buildSearchSuggestions() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            'Recent Searches',
+            'SEARCH SUGGESTIONS',
+            style: GoogleFonts.fredoka(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          if (_searchHistory.isNotEmpty) ...[
+            Text(
+              'Recent Searches',
+              style: GoogleFonts.fredoka(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _searchHistory.map((term) {
+                return GestureDetector(
+                  onTap: () {
+                    _searchController.text = term;
+                    _performSearch(term);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3DDCFF),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.black, width: 2),
+                    ),
+                    child: Text(
+                      term,
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
+          ],
+
+          Text(
+            'Popular Cuisines',
             style: GoogleFonts.fredoka(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -1741,21 +1781,21 @@ Widget _buildSearchSuggestions() {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _searchHistory.map((term) {
+            children: ['Pizza', 'Sushi', 'Burger', 'Thai', 'Italian', 'Chinese'].map((cuisine) {
               return GestureDetector(
                 onTap: () {
-                  _searchController.text = term;
-                  _performSearch(term);
+                  _searchController.text = cuisine;
+                  _performSearch(cuisine);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF3DDCFF),
+                    color: const Color(0xFF39FF6A),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.black, width: 2),
                   ),
                   child: Text(
-                    term,
+                    cuisine,
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1766,48 +1806,8 @@ Widget _buildSearchSuggestions() {
               );
             }).toList(),
           ),
-          const SizedBox(height: 24),
         ],
-        
-        Text(
-          'Popular Cuisines',
-          style: GoogleFonts.fredoka(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ['Pizza', 'Sushi', 'Burger', 'Thai', 'Italian', 'Chinese'].map((cuisine) {
-            return GestureDetector(
-              onTap: () {
-                _searchController.text = cuisine;
-                _performSearch(cuisine);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF39FF6A),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: Text(
-                  cuisine,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 }
