@@ -5,7 +5,6 @@
 <h1 align="center">WhatToEat 🍽️</h1>
 <p align="center">
   <b>Optimize meal decision-making for individuals and groups with ease and fun.</b><br/>
-  <i>Built proudly with 💙 in Flutter for the Malaysian Market (and beyond!)</i>
 </p>
 
 <p align="center">
